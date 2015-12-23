@@ -56,7 +56,7 @@ ASFEngine <- function() {
           }##EndOf for
         }##EndOf if
       summaryFunction("day")
-print(c(iteration,gTime))
+#print(c(iteration,gTime))
 #print(table(aHerd$status))
 
     }##EndOf while

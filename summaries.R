@@ -122,15 +122,21 @@ sumTh<-function(step){
          ClSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
 
-             SerTesting<-rep(FALSE,gMaxHerds)
-             if(2%in%SerologyTesting) SerTesting[aHerd$timeToPV1>=gTime] <- TRUE
-             if(3%in%SerologyTesting) SerTesting[aHerd$timeToSV1>=gTime] <- TRUE
-             if(4%in%SerologyTesting) SerTesting[aHerd$timeToSV2>=gTime] <- TRUE
-             SerTesting[aHerd$timeToPV2>=gTime] <- TRUE
-             SerTesting[aHerd$timeToTDC>=gTime] <- TRUE
-             SerTesting[TEMP] <- TRUE ## TEMP is the herds that will be traced through IDC. determined above.
-      if(sum(SerTesting)>0){
-      SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,which(SerTesting)))
+             SerTestingPV1<-rep(FALSE,gMaxHerds)
+             SerTestingSV1<-rep(FALSE,gMaxHerds)
+             SerTestingSV2<-rep(FALSE,gMaxHerds)
+             SerTestingPV2<-rep(FALSE,gMaxHerds)
+             SerTestingTDC<-rep(FALSE,gMaxHerds)
+             SerTestingTIDC<-rep(FALSE,gMaxHerds)
+             if(2%in%SerologyTesting) SerTestingPV1[aHerd$timeToPV1>=gTime] <- TRUE
+             if(3%in%SerologyTesting) SerTestingSV1[aHerd$timeToSV1>=gTime] <- TRUE
+             if(4%in%SerologyTesting) SerTestingSV2[aHerd$timeToSV2>=gTime] <- TRUE
+             SerTestingPV2[aHerd$timeToPV2>=gTime] <- TRUE
+             SerTestingTDC[aHerd$timeToTDC>=gTime] <- TRUE
+             SerTestingTIDC[TEMP] <- TRUE ## TEMP is the herds that will be traced through IDC. determined above.
+      if(sum(SerTestingPV1|SerTestingSV1|SerTestingSV2|SerTestingPV2|SerTestingTDC|SerTestingTIDC)>0){
+       SerTesting <- c(which(SerTestingPV1),which(SerTestingSV1),which(SerTestingSV2),which(SerTestingPV2),which(SerTestingTDC),which(SerTestingTIDC))
+       SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SerTesting))
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
          NAMESerSH <- paste(runID,"SerSurvayedHerds.txt",sep="-")
@@ -138,15 +144,21 @@ sumTh<-function(step){
          SerSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
 
-             TestingWPCR<-rep(FALSE,gMaxHerds)
-             if(2%in%PCRTesting) TestingWPCR[aHerd$timeToPV1>=gTime] <- TRUE
-             if(3%in%PCRTesting) TestingWPCR[aHerd$timeToSV1>=gTime] <- TRUE
-             if(4%in%PCRTesting) TestingWPCR[aHerd$timeToSV2>=gTime] <- TRUE
-             if(1%in%PCRTesting) TestingWPCR[aHerd$timeToPV2>=gTime] <- TRUE
-             TestingWPCR[aHerd$timeToTDC>=gTime] <- TRUE
-             TestingWPCR[TEMP] <- TRUE
-     if(sum(TestingWPCR)>0){
-      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,which(TestingWPCR)))
+             TestingWPCRPV1<-rep(FALSE,gMaxHerds)
+             TestingWPCRSV1<-rep(FALSE,gMaxHerds)
+             TestingWPCRPV2<-rep(FALSE,gMaxHerds)
+             TestingWPCRSV2<-rep(FALSE,gMaxHerds)
+             TestingWPCRTDC<-rep(FALSE,gMaxHerds)
+             TestingWPCRTIDC<-rep(FALSE,gMaxHerds)
+             if(2%in%PCRTesting) TestingWPCRPV1[aHerd$timeToPV1>=gTime] <- TRUE
+             if(3%in%PCRTesting) TestingWPCRSV1[aHerd$timeToSV1>=gTime] <- TRUE
+             if(4%in%PCRTesting) TestingWPCRSV2[aHerd$timeToSV2>=gTime] <- TRUE
+             if(1%in%PCRTesting) TestingWPCRPV2[aHerd$timeToPV2>=gTime] <- TRUE
+             TestingWPCRTDC[aHerd$timeToTDC>=gTime] <- TRUE
+             TestingWPCRTIDC[TEMP] <- TRUE
+     if(sum(TestingWPCRPV1|TestingWPCRSV1|TestingWPCRSV2|TestingWPCRPV2|TestingWPCRTDC|TestingWPCRTIDC)>0){
+      TestingWPCR <- c(which(TestingWPCRPV1),which(TestingWPCRSV1),which(TestingWPCRSV2),which(TestingWPCRPV2),which(TestingWPCRTDC),which(TestingWPCRTIDC))
+      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,TestingWPCR))
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
          NAMEPCRSH <- paste(runID,"PCRSurvayedHerds.txt",sep="-")
