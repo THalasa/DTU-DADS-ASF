@@ -1,5 +1,5 @@
-source("sourceASF.R")
+source("../DTU-DADS-ASF/sourceASF.R")
 sourceASF()
-indexHerdFile<-read.table("IndexHerds.csv",sep=";")
+indexHerdFile<-read.table("../ASFinputs/IndexHerds.csv",sep=";")
 optC<-ASFoptions(maxTime=365,n=1000,indexHerdSelect=list(ID=indexHerdFile[[1]]),interventionFunctions=c("SurvDead(2)"),runID="AOTestSZ",seed=-10)
 a<-ASF(optC)
