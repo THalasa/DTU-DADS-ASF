@@ -117,7 +117,7 @@ sumTh<-function(step){
       ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,which(ClinicalInsp)))
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMEClSH <- paste(runID,"ClSurvayedHerds.txt",sep="-")
+         NAMEClSH <- paste0("../ASFoutputs/",runID,"-ClSurvayedHerds.txt")
          write.table(ClSurvMatOut,NAMEClSH,append=TRUE,col.names = F,row.names = F)
          ClSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
@@ -139,7 +139,7 @@ sumTh<-function(step){
        SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SerTesting))
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMESerSH <- paste(runID,"SerSurvayedHerds.txt",sep="-")
+         NAMESerSH <- paste0("../ASFoutputs/",runID,"-SerSurvayedHerds.txt")
          write.table(SerSurvMatOut,NAMESerSH,append=TRUE,col.names = F,row.names = F)
          SerSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
@@ -161,7 +161,7 @@ sumTh<-function(step){
       PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,TestingWPCR))
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMEPCRSH <- paste(runID,"PCRSurvayedHerds.txt",sep="-")
+         NAMEPCRSH <- paste0("../ASFoutputs/",runID,"-PCRSurvayedHerds.txt")
          write.table(PCRSurvMatOut,NAMEPCRSH,append=TRUE,col.names = F,row.names = F)
          PCRSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
@@ -285,7 +285,7 @@ sumTh<-function(step){
                 PCRVisHerdCount[iteration],PCRVisAnimCount[iteration],NumSurvDeadHerd[iteration],NumSurvDeadAnim[iteration],VisitCostsCl[iteration],
                 VisitCostsTes[iteration],SurvCosDead[iteration],logCostsSw[iteration],CCostsPigFS[iteration],ESCosts[iteration],cosWSFin[iteration],
                 cosWSWean[iteration],CompCosts[iteration],CosSS[iteration],LoExpSwProdEU[iteration],LoExpLivSwEU[iteration],LoExpSwNEU[iteration],MeetDelay[iteration]) 
-      NAME <- paste(runID,"ASF.txt",sep="-") 
+      NAME <- paste0("../ASFoutputs/",runID,"-ASF.txt") 
       write.table(SumResOut,NAME,append=T,sep=" ",col.names = F,row.names=F)                                                     
       SumResOut  <<- matrix(numeric(0),ncol=31)
 
@@ -293,17 +293,17 @@ sumTh<-function(step){
       IndexAIH <- which(aHerd$Diagnosed | aHerd$SusAgain>0 | aHerd$infMode>0)
       AllInfHerds <<- cbind(iteration,aHerd$diagnosisTime[IndexAIH],aHerd$immuneTime[IndexAIH],IndexAIH,
                       aHerd$timeInfected[IndexAIH],aHerd$infMode[IndexAIH],aHerd$infSource[IndexAIH]) 
-      NAMEInf <- paste(runID,"AllInfHerds.txt",sep="-")
+      NAMEInf <- paste0("../ASFoutputs/",runID,"-AllInfHerds.txt")
       write.table(AllInfHerds,NAMEInf,append=T,sep=" ",col.names = F,row.names=F)
       AllInfHerds <<- matrix(numeric(0),ncol=7)
                                                                                                                       
          if(Detailed){ 
-           NAMES    <- paste(runID,"SurvHerds.txt",sep="-")
-           NAMEP    <- paste(runID,"ProtHerds.txt",sep="-")
-           NAMETDC  <- paste(runID,"TDCHerds.txt",sep="-")
-           NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
-           NAMED    <- paste(runID,"DepopHerds.txt",sep="-")
-           NAMEPE   <- paste(runID,"PreEmpHerds.txt",sep="-")
+           NAMES    <- paste0("../ASFoutputs/",runID,"-SurvHerds.txt")
+           NAMEP    <- paste0("../ASFoutputs/",runID,"-ProtHerds.txt")
+           NAMETDC  <- paste0("../ASFoutputs/",runID,"-TDCHerds.txt")
+           NAMETIDC <- paste0("../ASFoutputs/",runID,"-TIDCHerds.txt")
+           NAMED    <- paste0("../ASFoutputs/",runID,"-DepopHerds.txt")
+           NAMEPE   <- paste0("../ASFoutputs/",runID,"-PreEmpHerds.txt")
           # NAMESD   <- paste(runID,"SurDeadHerds.txt",sep="-")
            write.table(SurvZoneMatOut,NAMES,append=T,col.names = F,row.names=F)
            write.table(ProtZoneMatOut,NAMEP,append=T,col.names = F,row.names=F)
