@@ -225,12 +225,12 @@ eval.parent(expression(toPlot2<- NULL))#just to test
 
  eval.parent(expression(AllInfHerds <- NULL))
  AllInfHerds <<- matrix(numeric(0),ncol=7)
- NAMEInf <- paste(runID,"AllInfHerds.txt",sep="-")
+ NAMEInf <- paste0("../ASFoutputs/",runID,"-AllInfHerds.txt")
  write.table(AllInfHerds,NAMEInf,sep=" ")
 
  eval.parent(expression(SumResOut  <- NULL))
  SumResOut  <<- matrix(numeric(0),ncol=31)
- NAME <- paste(runID,"ASF.txt",sep="-") 
+ NAME <- paste0("../ASFoutputs/",runID,"-ASF.txt") 
  write.table(SumResOut,NAME,sep=" ")
 ######################################################################
 ### initiate the Matrix that includes surveyed herds (TH) Oct 2015 ###
@@ -259,15 +259,15 @@ if(Detailed){
  PreEmpMatOut     <<- matrix(numeric(0),ncol=3)
 # SurDeadMatOut    <<- matrix(numeric(0),ncol=3)
 
- NAMES    <- paste(runID,"SurvHerds.txt",sep="-")
- NAMEP    <- paste(runID,"ProtHerds.txt",sep="-")
- NAMEClSH <- paste(runID,"ClSurvayedHerds.txt",sep="-")
- NAMESerSH<- paste(runID,"SerSurvayedHerds.txt",sep="-")
- NAMEPCRSH<- paste(runID,"PCRSurvayedHerds.txt",sep="-")
- NAMETDC  <- paste(runID,"TDCHerds.txt",sep="-")
- NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
- NAMED    <- paste(runID,"DepopHerds.txt",sep="-")
- NAMEPE   <- paste(runID,"PreEmpHerds.txt",sep="-")
+ NAMES    <- paste0("../ASFoutputs/",runID,"-SurvHerds.txt")
+ NAMEP    <- paste0("../ASFoutputs/",runID,"-ProtHerds.txt")
+ NAMEClSH <- paste0("../ASFoutputs/",runID,"-ClSurvayedHerds.txt")
+ NAMESerSH<- paste0("../ASFoutputs/",runID,"-SerSurvayedHerds.txt")
+ NAMEPCRSH<- paste0("../ASFoutputs/",runID,"-PCRSurvayedHerds.txt")
+ NAMETDC  <- paste0("../ASFoutputs/",runID,"-TDCHerds.txt")
+ NAMETIDC <- paste0("../ASFoutputs/",runID,"-TIDCHerds.txt")
+ NAMED    <- paste0("../ASFoutputs/",runID,"-DepopHerds.txt")
+ NAMEPE   <- paste0("../ASFoutputs/",runID,"-PreEmpHerds.txt")
 # NAMESD   <- paste(runID,"SurDeadHerds.txt",sep="-")
 
  write.table(SurvZoneMatOut,NAMES,col.names = F,row.names=F)

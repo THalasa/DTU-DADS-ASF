@@ -173,7 +173,7 @@ CullRing <- function(size,startCulling,type=1){
       if(dim(PreEmpMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMED <- paste(runID,"PreEmpHerds.txt",sep="-")
+         NAMED <- paste0("../ASFoutputs/",runID,"-PreEmpHerds.txt")
          write.table(PreEmpMatOut,NAMED,append=TRUE,col.names = F,row.names = F)
          PreEmpMatOut<<- matrix(numeric(0),ncol=3)
          }
@@ -205,7 +205,7 @@ CullRing <- function(size,startCulling,type=1){
       if(dim(PreEmpMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMED <- paste(runID,"PreEmpHerds.txt",sep="-")
+         NAMED <- paste0("../ASFoutputs/",runID,"-PreEmpHerds.txt")
          write.table(PreEmpMatOut,NAMED,append=TRUE,col.names = F,row.names = F)
          PreEmpMatOut<<- matrix(numeric(0),ncol=3)
          }

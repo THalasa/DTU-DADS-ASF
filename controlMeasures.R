@@ -95,7 +95,7 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,label){
       if(dim(SurvZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMES <- paste(runID,"SurvHerds.txt",sep="-")
+         NAMES <- paste0("../ASFoutputs/",runID,"-SurvHerds.txt")
          write.table(SurvZoneMatOut,NAMES,append=TRUE,col.names = F,row.names = F)
          SurvZoneMatOut<<- matrix(numeric(0),ncol=3)
          }
@@ -204,7 +204,7 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,label){
       if(dim(ProtZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMEP <- paste(runID,"ProtHerds.txt",sep="-")
+         NAMEP <- paste0("../ASFoutputs/",runID,"-ProtHerds.txt")
          write.table(ProtZoneMatOut,NAMEP,append=TRUE,col.names = F,row.names = F)
          ProtZoneMatOut<<- matrix(numeric(0),ncol=3)
         }
@@ -379,21 +379,21 @@ TotNumQueue <<- dim(zoneQueue)[1]
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMEClSH <- paste(runID,"ClSurvayedHerds.txt",sep="-")
+         NAMEClSH <- paste0("../ASFoutputs/",runID,"-ClSurvayedHerds.txt")
          write.table(ClSurvMatOut,NAMEClSH,append=TRUE,col.names = F,row.names = F)
          ClSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
       if(dim(SerSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMESerSH <- paste(runID,"SerSurvayedHerds.txt",sep="-")
+         NAMESerSH <- paste0("../ASFoutputs/",runID,"-SerSurvayedHerds.txt")
          write.table(SerSurvMatOut,NAMESerSH,append=TRUE,col.names = F,row.names = F)
          SerSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
      if(dim(PCRSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMEPCRSH <- paste(runID,"PCRSurvayedHerds.txt",sep="-")
+         NAMEPCRSH <- paste0("../ASFoutputs/",runID,"-PCRSurvayedHerds.txt")
          write.table(PCRSurvMatOut,NAMEPCRSH,append=TRUE,col.names = F,row.names = F)
          PCRSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
@@ -512,7 +512,7 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
       if(dim(TraceDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETDC <- paste(runID,"TDCHerds.txt",sep="-")
+         NAMETDC <- paste0("../ASFoutputs/",runID,"-TDCHerds.txt")
          write.table(TraceDCMatOut,NAMETDC,append=TRUE,col.names = F,row.names = F)
          TraceDCMatOut<<- matrix(numeric(0),ncol=3)
         }
@@ -539,7 +539,7 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
       if(dim(TraceDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETDC <- paste(runID,"TDCHerds.txt",sep="-")
+         NAMETDC <- paste0("../ASFoutputs/",runID,"-TDCHerds.txt")
          write.table(TraceDCMatOut,NAMETDC,append=TRUE,col.names = F,row.names = F)
          TraceDCMatOut<<- matrix(numeric(0),ncol=3)
         }
@@ -612,7 +612,7 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
       if(dim(TraceIDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
+         NAMETIDC <- paste0("../ASFoutputs/",runID,"-TIDCHerds.txt")
          write.table(TraceIDCMatOut,NAMETIDC,append=TRUE,col.names = F,row.names = F)
          TraceIDCMatOut<<- matrix(numeric(0),ncol=3)
         }
@@ -644,7 +644,7 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
       if(dim(TraceIDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
+         NAMETIDC <- paste0("../ASFoutputs/",runID,"-TIDCHerds.txt")
          write.table(TraceIDCMatOut,NAMETIDC,append=TRUE,col.names = F,row.names = F)
          TraceIDCMatOut <<- matrix(numeric(0),ncol=3)
         }
