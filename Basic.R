@@ -1,5 +1,0 @@
-source("../DTU-DADS-ASF/sourceASF.R")
-sourceASF()
-indexHerdFile<-read.table("../ASFinputs/IndexHerds.csv",sep=";")
-optC<-ASFoptions(maxTime=365,n=1000,indexHerdSelect=list(ID=indexHerdFile[[1]]),runID="Basic",seed=-10)
-a<-ASF(optC)
