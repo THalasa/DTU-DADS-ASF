@@ -194,7 +194,7 @@ probList=list(   ## Default distributions
                  ## Economic Values
                  CostAnimPCR= 530,        # costs of PCR testing per animal
                  CostAnimSer= 68,         # costs of serology testing per animal
-                 CosIndsendelse=50,       # costs of sending a package of max 1kg. from postDanmark 
+                 CosIndsendelse=179,      # costs of sending a package of max 1kg. from postDanmark 
                  CostsSamTesSer=137,      # costs for sampling (traveling time, sampling time, sending the samples and materials) and testing (serology) per sample from a herd. time used 3 hours
                  CostsSamTesPCR=599,      # costs for sampling (traveling time, sampling time, sending the samples and materials) and testing (serology) per sample from a herd. time used 3 hours
 

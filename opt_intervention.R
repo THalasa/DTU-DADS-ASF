@@ -71,11 +71,14 @@ DummyInter<-function(){
              probDet[numOfSamples[Tmp]==Deaths[Tmp]&DeadOfASF>0] <- 1
              probDet[probDet>1] <- 1
              Submitted     <-  InfToSurvay[runif(length(InfToSurvay))<=probDet]
-             aHerd$SubDeadSamp[Submitted] <<- gTime + DelaySubDeadSamp
+             aHerd$SubDeadSamp[Submitted]  <<- gTime + DelaySubDeadSamp
              aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
              }#End of if
              ### Update the number of tested animals
-             if(length(InfToSurvay)==0) aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] 
+             if(length(InfToSurvay)==0){
+                numOfSamples <-  ifelse(Deaths<=aHerd$NumSampDead[SurvToday],Deaths,aHerd$NumSampDead[SurvToday])
+                aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
+             }#End of if
             }#End of if      
            }#End of function
           }#End of first part
@@ -129,7 +132,10 @@ DummyInter<-function(){
              aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
              }#End of if
              ### Update the number of tested animals
-             if(length(InfToSurvay)==0) aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday]
+             if(length(InfToSurvay)==0){
+                numOfSamples <-  ifelse(Deaths<=aHerd$NumSampDead[SurvToday],Deaths,aHerd$NumSampDead[SurvToday])
+                aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
+             }#End of if
             }#End of if      
            }#End of function
           }#End of second part
