@@ -91,7 +91,7 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,label){
 
           
   if(Detailed){
-      SurvZoneMatOut<<- rbind(SurvZoneMatOut,cbind(iteration,gTime,which(inCircle)))
+      if(sum(inCircle)>0) SurvZoneMatOut<<- rbind(SurvZoneMatOut,cbind(iteration,gTime,which(inCircle)))
       if(dim(SurvZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -200,7 +200,7 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,label){
         
 
   if(Detailed){
-      ProtZoneMatOut<<- rbind(ProtZoneMatOut,cbind(iteration,gTime,which(aHerd$inProtZone)))
+      if(sum(aHerd$inProtZone)>0) ProtZoneMatOut<<- rbind(ProtZoneMatOut,cbind(iteration,gTime,which(aHerd$inProtZone)))
       if(dim(ProtZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
