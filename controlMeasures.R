@@ -256,7 +256,7 @@ list(
    setQueue4 <- aHerd$timeToSV2==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))
 
  ## Find herds that have to get the tracing visit of indirect contacts (IDC)
-   setQueue5 <- aHerd$timeToVisitTraceIDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))  
+   setQueue5 <- aHerd$timeToVisitTraceIDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))
 
  ## Find herds that have to get the tracing visit of direct contacts (DC)
    setQueue6 <- aHerd$timeToVisitTraceDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))  
@@ -265,7 +265,7 @@ list(
  if(sum(setQueue2)>0) SerSetQueue2 <- rbinom(sum(setQueue2), size=1, prob=ProbSelPV1)
  if(sum(setQueue3)>0) SerSetQueue3 <- rbinom(sum(setQueue3), size=1, prob=ProbSelSV1)
  if(sum(setQueue4)>0) SerSetQueue4 <- rbinom(sum(setQueue4), size=1, prob=ProbSelSV2) 
- if(sum(setQueue5)>0) SerSetQueue5 <- rbinom(sum(setQueue3), size=1, prob=ProbSelTIDC)             
+ if(sum(setQueue5)>0) SerSetQueue5 <- rbinom(sum(setQueue5), size=1, prob=ProbSelTIDC)             
  
 ## Arrange the selected herds for visiting and those that have to be tested for testing
 setQueue1.1 <- matrix(numeric(0),ncol=4)

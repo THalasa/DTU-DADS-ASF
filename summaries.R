@@ -90,7 +90,7 @@ sumTh<-function(step){
              Tmp <- which(aHerd$timeToVisitTraceIDC>=gTime)
              if(length(Tmp)>0){
                 Tmp <- Tmp[runif(length(Tmp)) <= ProbSelTIDC]
-                TEMP[tmp] <- TRUE
+                TEMP[Tmp] <- TRUE
              }
              
              VisCountSer <- aHerd$sampVisitSer + (aHerd$timeToPV2>=gTime) + (aHerd$timeToVisitTraceDC>=gTime) + TEMP
