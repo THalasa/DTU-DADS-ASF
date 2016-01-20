@@ -503,7 +503,7 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
 	   if (length(traced)>0)
             traced <- traced[runif(length(traced))<prob]
           if(length(traced)>0){
-	      traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,2] ] < gTime ] ## Not revisiting already scheduled visits.                                                                                                                                                ## do not include tracing IDC, because now they should be tested.                       
+	      traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime ] ## Not revisiting already scheduled visits.                                                                                                                                                ## do not include tracing IDC, because now they should be tested.                       
             if(length(traced)>0){
               aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] <<- delayVisit[ traceMatrix[traced,2] ] + gTime
               aHerd$traceDC[ traceMatrix[traced,2] ]            <<- aHerd$traceDC[ traceMatrix[traced,2] ]+ 1 
@@ -530,9 +530,9 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
          if(length(traced)>0)
            traced <- traced[runif(length(traced))<prob]
           if(length(traced)>0){
-   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,3] ] < (gTime)] ## Not revisiting already scheduled visits.                                                                                                                                               ## do not include tracing IDC, because now they should be tested.                       
+   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] < gTime ] ## Not revisiting already scheduled visits.                                                                                                                                               ## do not include tracing IDC, because now they should be tested.                       
             if(length(traced)>0){
-           aHerd$timeToVisitTrace[ traceMatrix[traced,3] ] <<- delayVisit[ traceMatrix[traced,3] ] + gTime 
+           aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] <<- delayVisit[ traceMatrix[traced,3] ] + gTime
            aHerd$traceDC[ traceMatrix[traced,3] ] <<- aHerd$traceDC[ traceMatrix[traced,3] ]+ 1
         if(Detailed){
       TraceDCMatOut<<- rbind(TraceDCMatOut,cbind(iteration,gTime,traceMatrix[traced,3]))
@@ -598,8 +598,7 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
         if(length(traced)>0)
           traced <- traced[runif(length(traced))<probSelectTIDC[traceMatrix[traced,4]]]
          if(length(traced)>0){
-   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,2] ] < gTime & 
-                      aHerd$timeToVisitZone1[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,2] ] < gTime  ] ## Not revisiting already scheduled visits. 
+   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,2] ] < gTime ] ## Not revisiting already scheduled visits.            
           if(length(traced)>0){
              tmp<-numeric(0)
              for(i in traced){
@@ -630,8 +629,7 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
 	  if(length(traced)>0)
    	    traced <- traced[runif(length(traced))<probSelectTIDC[traceMatrix[traced,4]]]
          if(length(traced)>0){
-   	     traced <- traced[ aHerd$timeToVisitTrace[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,3] ] < gTime &
-                      aHerd$timeToVisitZone1[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,3] ] < gTime  ] ## Not revisiting already scheduled visits.           
+   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,3] ] < gTime ]## Not revisiting already scheduled visits.                         
           if(length(traced)>0){
              tmp<-numeric(0)
              for(i in traced){
