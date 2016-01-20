@@ -62,9 +62,9 @@ sumTh<-function(step){
            gEpiDur[iteration]         <<- gTime - gDaysUntilBaseline
            ObsEpiDur[iteration]       <<- max(aHerd$timeCulled) - gDaysUntilBaseline
            NumDet[iteration]          <<- sum(aHerd$Diagnosed)
-           NumInf[iteration]          <<- sum(aHerd$Diagnosed | aHerd$SusAgain>0 | aHerd$infMode>0)
+           NumInf[iteration]          <<- sum(aHerd$Diagnosed | aHerd$SusAgain>0 | aHerd$infMode>0 | aHerd$status==7)
            NumCulled[iteration]       <<- sum(aHerd$status%in%c(5,6)) 
-           Recovered[iteration]       <<- sum(aHerd$SusAgain>0)
+           Recovered[iteration]       <<- sum(aHerd$SusAgain>0 | aHerd$status==7)
            NumCullAnim[iteration]     <<- sum(aHerd$herdSize[aHerd$status%in%c(5,6)])
            NumSurvDeadAnim[iteration] <<- sum(aHerd$DeadSampTest)
            NumSurvDeadHerd[iteration] <<- sum(aHerd$SampledDead)
@@ -290,7 +290,7 @@ sumTh<-function(step){
       SumResOut  <<- matrix(numeric(0),ncol=31)
 
 ### Exporting the Infected herds matrix ### 
-      IndexAIH <- which(aHerd$Diagnosed | aHerd$SusAgain>0 | aHerd$infMode>0)
+      IndexAIH <- which(aHerd$Diagnosed | aHerd$SusAgain>0 | aHerd$infMode>0 | aHerd$status==7)
       AllInfHerds <<- cbind(iteration,aHerd$diagnosisTime[IndexAIH],aHerd$immuneTime[IndexAIH],IndexAIH,
                       aHerd$timeInfected[IndexAIH],aHerd$infMode[IndexAIH],aHerd$infSource[IndexAIH]) 
       NAMEInf <- paste(runID,"AllInfHerds.txt",sep="-")
