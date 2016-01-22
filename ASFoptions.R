@@ -141,7 +141,7 @@ probList=list(   ## Default distributions
                                   
                  ############################################################
                  ## Files
-                 infofile="DataDADSASF.csv",    # File with herd locations and type 
+                 infofile="../ASFinputs/DataDADSASF.csv",    # File with herd locations and type 
                  typesfile="typesfile.csv",  # Definitions of type parameters
                  runfile="",                 # File used for additional output
                 fileMovMatAll="MovMatAll.csv", # bla bla
