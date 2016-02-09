@@ -228,7 +228,7 @@ constructChronicle<-function(herdfile=warning("No herdfile specified when chroni
          idx$typesfile <- typesfile
          
          if(!(savefile))
-           savefile<-paste(runID,"ASF.bix",sep="-")
+           savefile<-paste0("../ASFoutputs/",runID,"-ASF.bix")
          save(idx,file=savefile);
          cat("\nSaved idx in ",savefile,"\n")
          if(length(dumpedFiles)>0){

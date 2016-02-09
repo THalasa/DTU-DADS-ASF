@@ -141,17 +141,17 @@ probList=list(   ## Default distributions
                                   
                  ############################################################
                  ## Files
-                 infofile="DataDADSASF.csv",    # File with herd locations and type 
-                 typesfile="typesfile.csv",  # Definitions of type parameters
+                 infofile="../ASFinputs/DataDADSASF.csv",    # File with herd locations and type 
+                 typesfile="../ASFinputs/typesfile.csv",  # Definitions of type parameters
                  runfile="",                 # File used for additional output
-                fileMovMatAll="MovMatAll.csv", # bla bla
-                fileMovMatWean="MovMatWean.csv",
-                fileMovAb="MovAb.csv",
-                fileMovSwProb="MovSwProb.csv",
-                fileMovWeProb="MovWeProb.csv",
-                fileSwMovAbProb="SwMovAbProb.csv",
-                fileMedRiskMovProb="MedRiskMovProb.csv",
-                fileLowRiskMovProb="LowRiskMovProb.csv",
+                fileMovMatAll="../ASFinputs/MovMatAll.csv", # bla bla
+                fileMovMatWean="../ASFinputs/MovMatWean.csv",
+                fileMovAb="../ASFinputs/MovAb.csv",
+                fileMovSwProb="../ASFinputs/MovSwProb.csv",
+                fileMovWeProb="../ASFinputs/MovWeProb.csv",
+                fileSwMovAbProb="../ASFinputs/SwMovAbProb.csv",
+                fileMedRiskMovProb="../ASFinputs/MedRiskMovProb.csv",
+                fileLowRiskMovProb="../ASFinputs/LowRiskMovProb.csv",
 
                 chroniclefile=FALSE,   # File name or FALSE to use runID.
 
