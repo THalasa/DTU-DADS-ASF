@@ -50,7 +50,9 @@ selectIndHerdMore<-function(args=NULL){
 #### Each row in args includes the multiple index herds (History herds)
 #### that will be used to initiate the epidemic
     tmp <- args
-    unlist(unname(tmp[iteration,]))
+    tmp <- tmp[iteration,]
+    tmp <- unlist(unname(tmp))
+    tmp <- tmp[!is.na(tmp)]
  }
 
 
@@ -357,6 +359,8 @@ initializeASFvars <- function() {
   aHerd$SubDeadSamp   <<- rep(0,gMaxHerds)
   aHerd$NumSampDead   <<- ifelse(aHerd$herdSize>=numTestDead,numTestDead,aHerd$herdSize)
   aHerd$SusAgain      <<- rep(0,gMaxHerds)
+
+
   ## This part works like list; it evaluates the text entries from the input
   ## table, whether those entries are numeric or R functions (like random
   ## variate selection), in order to set the waiting periods and transmission

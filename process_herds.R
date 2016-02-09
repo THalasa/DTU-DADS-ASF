@@ -26,8 +26,15 @@ updateHerds <- function () {
     getCHR <- aHerd$chr[depopQueue[1]]
     extraCull <- which(aHerd$chr%in%getCHR)
     extraCull <- extraCull[ !extraCull%in%depopQueue[1] ]
-    if(length(extraCull)>0) depopQueue <<- rbind(depopQueue,cbind(extraCull,gTime))
-
+    if(length(extraCull)>0) {
+      depopQueue   <<- rbind(depopQueue,cbind(extraCull,gTime))
+      InfEC        <- extraCull[aHerd$status[extraCull]%in%c(2,3,4,7)]
+      if(length(InfEC)>0){
+        aHerd$Diagnosed[InfEC]     <<- TRUE
+        aHerd$diagnosisTime[InfEC] <<- gTime
+        aInfHerd$setDiagnosed(InfEC)
+     }
+    }
    ## Move herds from queue to being depoped
     cullMat <-matrix(numeric(0),ncol=3)
     cullMat <- cbind(depopQueue,aHerd$herdSizeCull[depopQueue[,1]])
@@ -123,7 +130,7 @@ list(
            numDC        <- rpois(length(aHerd[[Lambda]][infHerdNums]),aHerd[[Lambda]][infHerdNums])*aHerd$relDC[infHerdNums]
            MovedAnimals <- sapply(aHerd$NumMovAnimal[infHerdNums],function(x) eval(x,list(n=1)))
            MovedAnimals[ MovedAnimals>=aHerd$herdSize[infHerdNums] ] <- ceiling(aHerd$herdSize[infHerdNums[MovedAnimals>=aHerd$herdSize[infHerdNums]]]/restMovedSize) # number moverd animals from a herds should not
-                                                                                                               # exceed the herd size. if so, the it is restricted to the median number of moved animals based on the
+                                                                                                               # exceed the herd size. if so, then it is restricted to the median number of moved animals based on the
                                                                                                               # the data from the movement datanase; 1/10 and 1/35 of the herd for weaners and sows, respectively
            InfnessHerds <- (1-(1-aInfHerd$getInfnessDC(infHerdNums))^MovedAnimals) # determine the probability that the contact is infectious
            numDC        <- RandContacts(numDC * InfnessHerds)
