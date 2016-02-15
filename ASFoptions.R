@@ -86,7 +86,7 @@ ASFoptions<-function(...){
                  DelayStartVisit=2,     # Number of days before the visiting of herds for surveillance would start
                  DelayVisit=7,          # delay for the extra visits for herds in overlapping zones.
                  MortalityIncrease=2,   # level of increase in mortality before potential detection.
-                 MortalityIncreaseZone=2,   # level of increase in mortality before potential detection.
+                 MortalityIncreaseZone=1.5,   # level of increase in mortality before potential detection.
                  InfPropSub=0.1,        # risk of infection from subclinical animals (before clinical signs appeared)
                  PerDeadAnim=0.95,      # percentage of animals that die following infection
                  DaysDead=5,            # number of past days to be used to determine infectiousness of leftovers of dead animals
