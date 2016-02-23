@@ -343,30 +343,78 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }#End of if
                  }#End of if 
 
-# This part includes detection of herds based on testing. This includes both subclinical and clinical herds following testing. The clinical herds will be confirmed 
-# only following testing as ASF shows non-specific clinical signs and hence the diagnosis is based on testing
-     IndexSample <-SurvMat2[SurvMat2[,3]==1,1]
-    toBeCulledTes <- which((aHerd$ID%in%IndexSample) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
-                 if(length(toBeCulledTes)>0){
-                   TMP1 <- aInfHerd$getInfected(toBeCulledTes)
-                   TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledTes]/(aHerd$herdSize[toBeCulledTes]-((TMP1-1)/2))))^TMP1
-                   TMP2[aHerd$NumSamp[toBeCulledTes]==aHerd$herdSize[toBeCulledTes]&TMP1>0] <-  1
+# This part includes detection of herds based on serology testing. 
+     IndexSer <-SurvMat2[SurvMat2[,4]%in%SerologyTesting ,1]
+     aHerd$sampVisitSer[IndexSer] <<- aHerd$sampVisitSer[IndexSer] + 1 
+     toBeCulledSer   <- which((aHerd$ID%in%IndexSer) & !(aHerd$Diagnosed) & (aHerd$status!=4))
+                 if(length(toBeCulledSer)>0){
+                   TMP1 <- floor(aHerd$Survived[toBeCulledSer])
+                   TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledSer]/(aHerd$herdSize[toBeCulledSer]-((TMP1-1)/2))))^TMP1
+                   TMP2[aHerd$NumSamp[toBeCulledSer]==aHerd$herdSize[toBeCulledSer]&TMP1>0] <-  1
                    TMP2[TMP2>1] <- 1                   
-                   toBeCulledTes <- toBeCulledTes[runif(length(toBeCulledTes))<=TMP2] 
-                   if(length(toBeCulledTes)>0){
-                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledTes,gTime))
-                    aHerd$Diagnosed[toBeCulledTes]     <<- TRUE
-                    aHerd$DiagSurv[toBeCulledTes]      <<- TRUE
-                    aHerd$diagnosisTime[toBeCulledTes] <<- gTime
-                    aInfHerd$setDiagnosed(toBeCulledTes)
+                   toBeCulledSer<- toBeCulledSer[runif(length(toBeCulledSer))<=TMP2] 
+                   if(length(toBeCulledSer)>0){
+                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledSer,gTime))
+                    aHerd$Diagnosed[toBeCulledSer]     <<- TRUE
+                    aHerd$DiagSurv[toBeCulledSer]      <<- TRUE
+                    aHerd$diagnosisTime[toBeCulledSer] <<- gTime
+                    aInfHerd$setDiagnosed(toBeCulledSer)
+                   }# End of if
+                  }#End of if
+#### detection of herds following surveillance visit. If the herd is clinical and fits the criteria for suspesion for ASF, the herd will be tested by PCR and serology.
+#### If there is no suspesion, the herd is tested only by serology and hence probability of detection is based only on survived animals following infection.
+     toBeCulledSerCl <- which((aHerd$ID%in%IndexSer) & !(aHerd$Diagnosed) & (aHerd$status==4))
+     toBeCulledSerClPCR <- integer(0)
+                 if(length(toBeCulledSerCl)>0){
+                    SickTime   <- aInfHerd$getTClic(toBeCulledSerCl)
+                    ExpectMort <- (gTime-SickTime) * aHerd$ExpMortality[toBeCulledSerCl]
+                    tmp        <- aHerd$Mortality[toBeCulledSerCl] >= (ExpectMort * MortalityIncreaseZone) & aHerd$Mortality[toBeCulledSerCl] >= NumDeadAnimSurv
+                    toBeCulledSerClPCR<- toBeCulledSerCl[tmp]
+                    if(length(toBeCulledSerClPCR)>0){
+                      aHerd$sampVisitPCR[toBeCulledSerClPCR] <<- aHerd$sampVisitPCR[toBeCulledSerClPCR] + 1 
+                      TMP1 <- aInfHerd$getInfected(toBeCulledSerClPCR)
+                      TMP2 <- 1-(1-(aHerd$NumSamp[toBeCulledSerClPCR]/(aHerd$herdSize[toBeCulledSerClPCR]-((TMP1-1)/2))))^TMP1
+                      TMP2[aHerd$NumSamp[toBeCulledSerClPCR]==aHerd$herdSize[toBeCulledSerClPCR]&TMP1>0] <-  1
+                      TMP2[TMP2>1] <- 1               
+                      toBeCulledSerClPCR<- toBeCulledSerClPCR[runif(length(toBeCulledSerClPCR))<=TMP2]
+                     }
+                    toBeCulledSerCl2<- toBeCulledSerCl[!tmp]
+                    if(length(toBeCulledSerCl2)>0){
+                      TMP1 <- floor(aHerd$Survived[toBeCulledSerCl2])
+                      TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledSerCl2]/(aHerd$herdSize[toBeCulledSerCl2]-((TMP1-1)/2))))^TMP1
+                      TMP2[aHerd$NumSamp[toBeCulledSerCl2]==aHerd$herdSize[toBeCulledSerCl2]&TMP1>0] <-  1
+                      TMP2[TMP2>1] <- 1                   
+                      toBeCulledSerCl2<- toBeCulledSerCl2[runif(length(toBeCulledSerCl2))<=TMP2]
+                      }
+                   toBeCulledSerCl3 <- unique(c(toBeCulledSerClPCR,toBeCulledSerCl2))
+                   if(length(toBeCulledSerCl3)>0){
+                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledSerCl3,gTime))
+                    aHerd$Diagnosed[toBeCulledSerCl3]     <<- TRUE
+                    aHerd$DiagSurv[toBeCulledSerCl3]      <<- TRUE
+                    aHerd$diagnosisTime[toBeCulledSerCl3] <<- gTime
+                    aInfHerd$setDiagnosed(toBeCulledSerCl3)
                    }# End of if
                   }#End of if
 
-## update counts for herds that will be tested by serology and those that will be tested by PCR
-     IndexSero <- SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]
-       aHerd$sampVisitSer[IndexSero] <<- aHerd$sampVisitSer[IndexSero] + 1 
-     IndexPCR <- SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1]
-       aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
+# This part includes detection of herds based on serology testing. 
+    IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting ,1]
+    aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
+    toBeCulledPCR <- which((aHerd$ID%in%IndexPCR) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
+                 if(length(toBeCulledPCR)>0){
+                   TMP1 <- aInfHerd$getInfected(toBeCulledPCR)
+                   TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledPCR]/(aHerd$herdSize[toBeCulledPCR]-((TMP1-1)/2))))^TMP1
+                   TMP2[aHerd$NumSamp[toBeCulledPCR]==aHerd$herdSize[toBeCulledPCR]&TMP1>0] <-  1
+                   TMP2[TMP2>1] <- 1                   
+                   toBeCulledPCR<- toBeCulledPCR[runif(length(toBeCulledPCR))<=TMP2] 
+                   if(length(toBeCulledPCR)>0){
+                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledPCR,gTime))
+                    aHerd$Diagnosed[toBeCulledPCR]     <<- TRUE
+                    aHerd$DiagSurv[toBeCulledPCR]      <<- TRUE
+                    aHerd$diagnosisTime[toBeCulledPCR] <<- gTime
+                    aInfHerd$setDiagnosed(toBeCulledPCR)
+                   }# End of if
+                  }#End of if
+
 
 ####################################################################################
 ### this is a matrix to output the day the herd was sat for surveillance and the ###
@@ -375,7 +423,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
   if(Detailed){
      if(sum(SurvMat2[,3]==0)>0)                 ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,SurvMat2[SurvMat2[,3]==0,1]))
      if(sum(SurvMat2[,4]%in%SerologyTesting)>0) SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]))
-     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1]))
+     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,c(toBeCulledSerClPCR,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1])))
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)

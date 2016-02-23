@@ -648,7 +648,8 @@ constructAInfHerd<-function(){
            }
 
          ## update the number sick and dead animals
-         aHerd$Mortality[herds[,8]] <<- (herds[,4]+(herds[,5]*PerDeadAnim))    
+         aHerd$Mortality[herds[,8]] <<- (herds[,4]+(herds[,5]*PerDeadAnim)) 
+         aHerd$Survived[herds[,8]]  <<- (herds[,5]*(1-PerDeadAnim))
 
          }##EndOf if (nrow(herds)>0)
        }

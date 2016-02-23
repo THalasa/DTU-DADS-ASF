@@ -359,6 +359,7 @@ initializeASFvars <- function() {
   aHerd$SubDeadSamp   <<- rep(0,gMaxHerds)
   aHerd$NumSampDead   <<- ifelse(aHerd$herdSize>=numTestDead,numTestDead,aHerd$herdSize)
   aHerd$SusAgain      <<- rep(0,gMaxHerds)
+  aHerd$Survived      <<- rep(0,gMaxHerds)
 
 
   ## This part works like list; it evaluates the text entries from the input
