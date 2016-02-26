@@ -79,7 +79,7 @@ updateHerds <- function () {
       if(dim(DepopMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMED <- paste(runID,"DepopHerds.txt",sep="-")
+         NAMED <- paste0("../ASFoutputs/",runID,"-DepopHerds.txt")
          write.table(DepopMatOut,NAMES,append=TRUE,col.names = F,row.names = F)
          DepopMatOut<<- matrix(numeric(0),ncol=3)
          }
