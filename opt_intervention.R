@@ -57,9 +57,10 @@ DummyInter<-function(){
  #       }
            ## Update tested herds
            aHerd$SampledDead[SurvToday]  <<- aHerd$SampledDead[SurvToday]  + 1
- 
+
            Deaths      <- round(aHerd$ExpMortality[SurvToday] * DaysSurDead)
            Tmp         <- match(infHerdNums,SurvToday)
+
            Tmp         <- Tmp[!is.na(Tmp)]
            ### Get the infected herds that will be survayed today
            InfToSurvay <- infHerdNums[infHerdNums%in%SurvToday]
@@ -164,7 +165,6 @@ CullRing <- function(size,startCulling,type=1){
            tmpR<-rowSums(as.matrix(Dist$get(tmpID)<= CullRingSize))
            Rdepops <-tmpR & !aHerd$status%in%c(5,6) & !(aHerd$Diagnosed) & aHerd$cullEligible 
            if (sum(Rdepops)>0){
-            aHerd$NonClinicalDepop[Rdepops] <<- aHerd$status[Rdepops]
             aHerd$status[Rdepops] <<-6
             aHerd$timeToTaggedForDepop[Rdepops] <<- gTime
             aHerd$timeToPV1[Rdepops] <<- 0
@@ -196,7 +196,6 @@ CullRing <- function(size,startCulling,type=1){
            tmpR<-rowSums(as.matrix(Dist$get(tmpID)<= CullRingSize))
            Rdepops <-tmpR & !aHerd$status%in%c(5,6) & !(aHerd$Diagnosed) & aHerd$cullEligible 
            if (sum(Rdepops)>0){
-            aHerd$NonClinicalDepop[Rdepops] <<- aHerd$status[Rdepops]
             aHerd$status[Rdepops] <<-6
             aHerd$timeToTaggedForDepop[Rdepops] <<- gTime
             aHerd$timeToPV1[Rdepops] <<- 0
