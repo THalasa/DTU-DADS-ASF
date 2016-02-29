@@ -105,8 +105,17 @@ updateHerds <- function () {
 ### Selecting herds infected by direct contact
 ###################################
 
-DIRinf3<- function(Lambda,distprob,DCtoRiskDist,RiskInf,MovMat,restMovedSize,label,tStart=0,tEnd=Inf){
+DIRinf3<- function(Animal,distprob,DCtoRiskDist,RiskInf,MovMat,restMovedSize,label,tStart=0,tEnd=Inf){
 
+  if (Animal == 'All') { 
+    Lambda <- 'LamAll'
+    BatchType <- 'NumMovAll'
+  }
+  else{
+    Lambda <- 'LambdaWeaners'
+    BatchType <- 'NumMovWea'
+  }
+    
 if(verbose){
     cat("DIRinf3 envir ");print(environment())
     print(parent.env(environment()))
@@ -128,7 +137,7 @@ list(
            ## at least one infected animal in each infectious batch
 
            numDC        <- rpois(length(aHerd[[Lambda]][infHerdNums]),aHerd[[Lambda]][infHerdNums])*aHerd$relDC[infHerdNums]
-           MovedAnimals <- sapply(aHerd$NumMovAnimal[infHerdNums],function(x) eval(x,list(n=1)))
+           MovedAnimals <- sapply(aHerd[[BatchType]][infHerdNums],function(x) eval(x,list(n=1)))
            MovedAnimals[ MovedAnimals>=aHerd$herdSize[infHerdNums] ] <- ceiling(aHerd$herdSize[infHerdNums[MovedAnimals>=aHerd$herdSize[infHerdNums]]]/restMovedSize) # number moverd animals from a herds should not
                                                                                                                # exceed the herd size. if so, then it is restricted to the median number of moved animals based on the
                                                                                                               # the data from the movement datanase; 1/10 and 1/35 of the herd for weaners and sows, respectively
