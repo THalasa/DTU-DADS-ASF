@@ -114,6 +114,8 @@ createASFvars <- function() {
    MovMatAll<<-as.matrix(read.table(fileMovMatAll,sep=";",dec=",")) 
    MovMatWean<<-as.matrix(read.table(fileMovMatWean,sep=";",dec=","))
    MovAb<<-as.matrix(read.table(fileMovAb,sep=";",dec=",")) 
+   BatchAnimAll <<-as.matrix(read.table(fileBatchAnimAll,sep=";",dec=",")) 
+   BatchAnimWea <<-as.matrix(read.table(fileBatchAnimWea,sep=";",dec=",")) 
 
 eval.parent(expression(MovSwProb<-NULL))
    MovSwProb<<-as.list(read.table(fileMovSwProb,sep=";",dec=","))
@@ -209,21 +211,24 @@ eval.parent(expression(toPlot2<- NULL))#just to test
   }
 
   ## Initiate distributions of animals moved and distribute them over the different herdsize categories
-   HerdSizeCategories <- sort(unique(aHerd$herdSizeCat)) 
-   HerdSizeCatDistAO  <- parse(text=c('round(rpert(n,1,1,2))','round(rpert(n,1,61,196))','round(rpert(n,1,85,415))','round(rpert(n,1,110,433))','round(rpert(n,1,81,371))'))
-   HerdSizeCatDist    <- parse(text=c('round(rpert(n,1,1,2))','round(rpert(n,1,25,290))','round(rpert(n,1,304,800))','round(rpert(n,1,300,910))','round(rpert(n,1,290,800))'))
-   
-   aHerd$NumMovAnimal <<- rep(0,length(aHerd$herdType))
-   for(i in HerdSizeCategories){
-    Index <- aHerd$herdType==1&aHerd$herdSizeCat==HerdSizeCategories[i]
-    aHerd$NumMovAnimal[Index] <<- rep(HerdSizeCatDistAO[i],sum(Index))
-   }
-   for(i in HerdSizeCategories){
-    for(j in 2:10){
-    Index <- aHerd$herdType==j&aHerd$herdSizeCat==HerdSizeCategories[i]
-    aHerd$NumMovAnimal[Index] <<- rep(HerdSizeCatDist[i],sum(Index))
+   HerdSizeCategories <- sort(unique(aHerd$herdSizeCat))
+   HerdTypesCat <- sort(unique(aHerd$herdType))
+    BatchAnimAll <- as.list(data.frame(t(BatchAnimAll)))
+    BatchAnimWea <- as.list(data.frame(t(BatchAnimWea)))
+    for (i in 1: length(BatchAnimAll)){
+      BatchAnimAll[[i]] <- parse(text=as.character(BatchAnimAll[[i]]))
+      BatchAnimWea[[i]] <- parse(text=as.character(BatchAnimWea[[i]]))
     }
-   }
+   
+    aHerd$NumMovAll <<- rep(0,length(aHerd$herdType))
+    aHerd$NumMovWea <<- rep(0,length(aHerd$herdType))
+    for(i in HerdSizeCategories){
+      for (j in HerdTypesCat){
+        Index <- aHerd$herdType==j & aHerd$herdSizeCat==HerdSizeCategories[i]
+        aHerd$NumMovAll[Index] <<- rep(BatchAnimAll[[j]][i],sum(Index))
+        aHerd$NumMovWea[Index] <<- rep(BatchAnimWea[[j]][i],sum(Index))
+      }
+    }   
 
  eval.parent(expression(AllInfHerds <- NULL))
  AllInfHerds <<- matrix(numeric(0),ncol=7)
