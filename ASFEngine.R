@@ -40,7 +40,7 @@ ASFEngine <- function() {
         }      
       }  
       ## Finding the indexes of infectious herds
-      tmpTagged<-which( aHerd$status==6 & aHerd$timeInfected<Inf)
+      tmpTagged<-which( aHerd$status==6 & aHerd$timeInfected<Inf & aHerd$SusAgain==0)
       infHerdNums <<- unique(c(tmpTagged,
                              (aInfHerd$getIDs())[aInfHerd$getstatus()%in%(3:4)]))
       if (verbose) print(c("aInfHerd$getIDs: ",aInfHerd$getIDs()))

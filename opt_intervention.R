@@ -57,9 +57,10 @@ DummyInter<-function(){
  #       }
            ## Update tested herds
            aHerd$SampledDead[SurvToday]  <<- aHerd$SampledDead[SurvToday]  + 1
- 
+
            Deaths      <- round(aHerd$ExpMortality[SurvToday] * DaysSurDead)
            Tmp         <- match(infHerdNums,SurvToday)
+
            Tmp         <- Tmp[!is.na(Tmp)]
            ### Get the infected herds that will be survayed today
            InfToSurvay <- infHerdNums[infHerdNums%in%SurvToday]
@@ -71,11 +72,14 @@ DummyInter<-function(){
              probDet[numOfSamples[Tmp]==Deaths[Tmp]&DeadOfASF>0] <- 1
              probDet[probDet>1] <- 1
              Submitted     <-  InfToSurvay[runif(length(InfToSurvay))<=probDet]
-             aHerd$SubDeadSamp[Submitted] <<- gTime + DelaySubDeadSamp
+             aHerd$SubDeadSamp[Submitted]  <<- gTime + DelaySubDeadSamp
              aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
              }#End of if
              ### Update the number of tested animals
-             if(length(InfToSurvay)==0) aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] 
+             if(length(InfToSurvay)==0){
+                numOfSamples <-  ifelse(Deaths<=aHerd$NumSampDead[SurvToday],Deaths,aHerd$NumSampDead[SurvToday])
+                aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
+             }#End of if
             }#End of if      
            }#End of function
           }#End of first part
@@ -129,7 +133,10 @@ DummyInter<-function(){
              aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
              }#End of if
              ### Update the number of tested animals
-             if(length(InfToSurvay)==0) aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday]
+             if(length(InfToSurvay)==0){
+                numOfSamples <-  ifelse(Deaths<=aHerd$NumSampDead[SurvToday],Deaths,aHerd$NumSampDead[SurvToday])
+                aHerd$DeadSampTest[SurvToday] <<- aHerd$DeadSampTest[SurvToday] + numOfSamples
+             }#End of if
             }#End of if      
            }#End of function
           }#End of second part
@@ -158,7 +165,6 @@ CullRing <- function(size,startCulling,type=1){
            tmpR<-rowSums(as.matrix(Dist$get(tmpID)<= CullRingSize))
            Rdepops <-tmpR & !aHerd$status%in%c(5,6) & !(aHerd$Diagnosed) & aHerd$cullEligible 
            if (sum(Rdepops)>0){
-            aHerd$NonClinicalDepop[Rdepops] <<- aHerd$status[Rdepops]
             aHerd$status[Rdepops] <<-6
             aHerd$timeToTaggedForDepop[Rdepops] <<- gTime
             aHerd$timeToPV1[Rdepops] <<- 0
@@ -190,7 +196,6 @@ CullRing <- function(size,startCulling,type=1){
            tmpR<-rowSums(as.matrix(Dist$get(tmpID)<= CullRingSize))
            Rdepops <-tmpR & !aHerd$status%in%c(5,6) & !(aHerd$Diagnosed) & aHerd$cullEligible 
            if (sum(Rdepops)>0){
-            aHerd$NonClinicalDepop[Rdepops] <<- aHerd$status[Rdepops]
             aHerd$status[Rdepops] <<-6
             aHerd$timeToTaggedForDepop[Rdepops] <<- gTime
             aHerd$timeToPV1[Rdepops] <<- 0

@@ -86,7 +86,7 @@ ASFoptions<-function(...){
                  DelayStartVisit=2,     # Number of days before the visiting of herds for surveillance would start
                  DelayVisit=7,          # delay for the extra visits for herds in overlapping zones.
                  MortalityIncrease=2,   # level of increase in mortality before potential detection.
-                 MortalityIncreaseZone=2,   # level of increase in mortality before potential detection.
+                 MortalityIncreaseZone=1.5,   # level of increase in mortality before potential detection.
                  InfPropSub=0.1,        # risk of infection from subclinical animals (before clinical signs appeared)
                  PerDeadAnim=0.95,      # percentage of animals that die following infection
                  DaysDead=5,            # number of past days to be used to determine infectiousness of leftovers of dead animals
@@ -194,7 +194,7 @@ probList=list(   ## Default distributions
                  ## Economic Values
                  CostAnimPCR= 530,        # costs of PCR testing per animal
                  CostAnimSer= 68,         # costs of serology testing per animal
-                 CosIndsendelse=50,       # costs of sending a package of max 1kg. from postDanmark 
+                 CosIndsendelse=179,      # costs of sending a package of max 1kg. from postDanmark 
                  CostsSamTesSer=137,      # costs for sampling (traveling time, sampling time, sending the samples and materials) and testing (serology) per sample from a herd. time used 3 hours
                  CostsSamTesPCR=599,      # costs for sampling (traveling time, sampling time, sending the samples and materials) and testing (serology) per sample from a herd. time used 3 hours
 

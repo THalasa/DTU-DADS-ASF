@@ -91,7 +91,7 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,label){
 
           
   if(Detailed){
-      SurvZoneMatOut<<- rbind(SurvZoneMatOut,cbind(iteration,gTime,which(inCircle)))
+      if(sum(inCircle)>0) SurvZoneMatOut<<- rbind(SurvZoneMatOut,cbind(iteration,gTime,which(inCircle)))
       if(dim(SurvZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -200,7 +200,7 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,label){
         
 
   if(Detailed){
-      ProtZoneMatOut<<- rbind(ProtZoneMatOut,cbind(iteration,gTime,which(aHerd$inProtZone)))
+      if(sum(aHerd$inProtZone)>0) ProtZoneMatOut<<- rbind(ProtZoneMatOut,cbind(iteration,gTime,which(aHerd$inProtZone)))
       if(dim(ProtZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -256,7 +256,7 @@ list(
    setQueue4 <- aHerd$timeToSV2==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))
 
  ## Find herds that have to get the tracing visit of indirect contacts (IDC)
-   setQueue5 <- aHerd$timeToVisitTraceIDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))  
+   setQueue5 <- aHerd$timeToVisitTraceIDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))
 
  ## Find herds that have to get the tracing visit of direct contacts (DC)
    setQueue6 <- aHerd$timeToVisitTraceDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))  
@@ -265,7 +265,7 @@ list(
  if(sum(setQueue2)>0) SerSetQueue2 <- rbinom(sum(setQueue2), size=1, prob=ProbSelPV1)
  if(sum(setQueue3)>0) SerSetQueue3 <- rbinom(sum(setQueue3), size=1, prob=ProbSelSV1)
  if(sum(setQueue4)>0) SerSetQueue4 <- rbinom(sum(setQueue4), size=1, prob=ProbSelSV2) 
- if(sum(setQueue5)>0) SerSetQueue5 <- rbinom(sum(setQueue3), size=1, prob=ProbSelTIDC)             
+ if(sum(setQueue5)>0) SerSetQueue5 <- rbinom(sum(setQueue5), size=1, prob=ProbSelTIDC)             
  
 ## Arrange the selected herds for visiting and those that have to be tested for testing
 setQueue1.1 <- matrix(numeric(0),ncol=4)
@@ -343,30 +343,78 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }#End of if
                  }#End of if 
 
-# This part includes detection of herds based on testing. This includes both subclinical and clinical herds following testing. The clinical herds will be confirmed 
-# only following testing as ASF shows non-specific clinical signs and hence the diagnosis is based on testing
-     IndexSample <-SurvMat2[SurvMat2[,3]==1,1]
-    toBeCulledTes <- which((aHerd$ID%in%IndexSample) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
-                 if(length(toBeCulledTes)>0){
-                   TMP1 <- aInfHerd$getInfected(toBeCulledTes)
-                   TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledTes]/(aHerd$herdSize[toBeCulledTes]-((TMP1-1)/2))))^TMP1
-                   TMP2[aHerd$NumSamp[toBeCulledTes]==aHerd$herdSize[toBeCulledTes]&TMP1>0] <-  1
+# This part includes detection of herds based on serology testing. 
+     IndexSer <-SurvMat2[SurvMat2[,4]%in%SerologyTesting ,1]
+     aHerd$sampVisitSer[IndexSer] <<- aHerd$sampVisitSer[IndexSer] + 1 
+     toBeCulledSer   <- which((aHerd$ID%in%IndexSer) & !(aHerd$Diagnosed) & (aHerd$status!=4))
+                 if(length(toBeCulledSer)>0){
+                   TMP1 <- floor(aHerd$Survived[toBeCulledSer])
+                   TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledSer]/(aHerd$herdSize[toBeCulledSer]-((TMP1-1)/2))))^TMP1
+                   TMP2[aHerd$NumSamp[toBeCulledSer]==aHerd$herdSize[toBeCulledSer]&TMP1>0] <-  1
                    TMP2[TMP2>1] <- 1                   
-                   toBeCulledTes <- toBeCulledTes[runif(length(toBeCulledTes))<=TMP2] 
-                   if(length(toBeCulledTes)>0){
-                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledTes,gTime))
-                    aHerd$Diagnosed[toBeCulledTes]     <<- TRUE
-                    aHerd$DiagSurv[toBeCulledTes]      <<- TRUE
-                    aHerd$diagnosisTime[toBeCulledTes] <<- gTime
-                    aInfHerd$setDiagnosed(toBeCulledTes)
+                   toBeCulledSer<- toBeCulledSer[runif(length(toBeCulledSer))<=TMP2] 
+                   if(length(toBeCulledSer)>0){
+                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledSer,gTime))
+                    aHerd$Diagnosed[toBeCulledSer]     <<- TRUE
+                    aHerd$DiagSurv[toBeCulledSer]      <<- TRUE
+                    aHerd$diagnosisTime[toBeCulledSer] <<- gTime
+                    aInfHerd$setDiagnosed(toBeCulledSer)
+                   }# End of if
+                  }#End of if
+#### detection of herds following surveillance visit. If the herd is clinical and fits the criteria for suspesion for ASF, the herd will be tested by PCR and serology.
+#### If there is no suspesion, the herd is tested only by serology and hence probability of detection is based only on survived animals following infection.
+     toBeCulledSerCl <- which((aHerd$ID%in%IndexSer) & !(aHerd$Diagnosed) & (aHerd$status==4))
+     toBeCulledSerClPCR <- integer(0)
+                 if(length(toBeCulledSerCl)>0){
+                    SickTime   <- aInfHerd$getTClic(toBeCulledSerCl)
+                    ExpectMort <- (gTime-SickTime) * aHerd$ExpMortality[toBeCulledSerCl]
+                    tmp        <- aHerd$Mortality[toBeCulledSerCl] >= (ExpectMort * MortalityIncreaseZone) & aHerd$Mortality[toBeCulledSerCl] >= NumDeadAnimSurv
+                    toBeCulledSerClPCR<- toBeCulledSerCl[tmp]
+                    if(length(toBeCulledSerClPCR)>0){
+                      aHerd$sampVisitPCR[toBeCulledSerClPCR] <<- aHerd$sampVisitPCR[toBeCulledSerClPCR] + 1 
+                      TMP1 <- aInfHerd$getInfected(toBeCulledSerClPCR)
+                      TMP2 <- 1-(1-(aHerd$NumSamp[toBeCulledSerClPCR]/(aHerd$herdSize[toBeCulledSerClPCR]-((TMP1-1)/2))))^TMP1
+                      TMP2[aHerd$NumSamp[toBeCulledSerClPCR]==aHerd$herdSize[toBeCulledSerClPCR]&TMP1>0] <-  1
+                      TMP2[TMP2>1] <- 1               
+                      toBeCulledSerClPCR<- toBeCulledSerClPCR[runif(length(toBeCulledSerClPCR))<=TMP2]
+                     }
+                    toBeCulledSerCl2<- toBeCulledSerCl[!tmp]
+                    if(length(toBeCulledSerCl2)>0){
+                      TMP1 <- floor(aHerd$Survived[toBeCulledSerCl2])
+                      TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledSerCl2]/(aHerd$herdSize[toBeCulledSerCl2]-((TMP1-1)/2))))^TMP1
+                      TMP2[aHerd$NumSamp[toBeCulledSerCl2]==aHerd$herdSize[toBeCulledSerCl2]&TMP1>0] <-  1
+                      TMP2[TMP2>1] <- 1                   
+                      toBeCulledSerCl2<- toBeCulledSerCl2[runif(length(toBeCulledSerCl2))<=TMP2]
+                      }
+                   toBeCulledSerCl3 <- unique(c(toBeCulledSerClPCR,toBeCulledSerCl2))
+                   if(length(toBeCulledSerCl3)>0){
+                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledSerCl3,gTime))
+                    aHerd$Diagnosed[toBeCulledSerCl3]     <<- TRUE
+                    aHerd$DiagSurv[toBeCulledSerCl3]      <<- TRUE
+                    aHerd$diagnosisTime[toBeCulledSerCl3] <<- gTime
+                    aInfHerd$setDiagnosed(toBeCulledSerCl3)
                    }# End of if
                   }#End of if
 
-## update counts for herds that will be tested by serology and those that will be tested by PCR
-     IndexSero <- SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]
-       aHerd$sampVisitSer[IndexSero] <<- aHerd$sampVisitSer[IndexSero] + 1 
-     IndexPCR <- SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1]
-       aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
+# This part includes detection of herds based on serology testing. 
+    IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting ,1]
+    aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
+    toBeCulledPCR <- which((aHerd$ID%in%IndexPCR) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
+                 if(length(toBeCulledPCR)>0){
+                   TMP1 <- aInfHerd$getInfected(toBeCulledPCR)
+                   TMP2 <-  1-(1-(aHerd$NumSamp[toBeCulledPCR]/(aHerd$herdSize[toBeCulledPCR]-((TMP1-1)/2))))^TMP1
+                   TMP2[aHerd$NumSamp[toBeCulledPCR]==aHerd$herdSize[toBeCulledPCR]&TMP1>0] <-  1
+                   TMP2[TMP2>1] <- 1                   
+                   toBeCulledPCR<- toBeCulledPCR[runif(length(toBeCulledPCR))<=TMP2] 
+                   if(length(toBeCulledPCR)>0){
+                    depopQueue <<-rbind(depopQueue,cbind(toBeCulledPCR,gTime))
+                    aHerd$Diagnosed[toBeCulledPCR]     <<- TRUE
+                    aHerd$DiagSurv[toBeCulledPCR]      <<- TRUE
+                    aHerd$diagnosisTime[toBeCulledPCR] <<- gTime
+                    aInfHerd$setDiagnosed(toBeCulledPCR)
+                   }# End of if
+                  }#End of if
+
 
 ####################################################################################
 ### this is a matrix to output the day the herd was sat for surveillance and the ###
@@ -375,7 +423,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
   if(Detailed){
      if(sum(SurvMat2[,3]==0)>0)                 ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,SurvMat2[SurvMat2[,3]==0,1]))
      if(sum(SurvMat2[,4]%in%SerologyTesting)>0) SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]))
-     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1]))
+     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,c(toBeCulledSerClPCR,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1])))
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -503,7 +551,7 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
 	   if (length(traced)>0)
             traced <- traced[runif(length(traced))<prob]
           if(length(traced)>0){
-	      traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,2] ] < gTime ] ## Not revisiting already scheduled visits.                                                                                                                                                ## do not include tracing IDC, because now they should be tested.                       
+	      traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime ] ## Not revisiting already scheduled visits.                                                                                                                                                ## do not include tracing IDC, because now they should be tested.                       
             if(length(traced)>0){
               aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] <<- delayVisit[ traceMatrix[traced,2] ] + gTime
               aHerd$traceDC[ traceMatrix[traced,2] ]            <<- aHerd$traceDC[ traceMatrix[traced,2] ]+ 1 
@@ -530,9 +578,9 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
          if(length(traced)>0)
            traced <- traced[runif(length(traced))<prob]
           if(length(traced)>0){
-   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,3] ] < (gTime)] ## Not revisiting already scheduled visits.                                                                                                                                               ## do not include tracing IDC, because now they should be tested.                       
+   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] < gTime ] ## Not revisiting already scheduled visits.                                                                                                                                               ## do not include tracing IDC, because now they should be tested.                       
             if(length(traced)>0){
-           aHerd$timeToVisitTrace[ traceMatrix[traced,3] ] <<- delayVisit[ traceMatrix[traced,3] ] + gTime 
+           aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] <<- delayVisit[ traceMatrix[traced,3] ] + gTime
            aHerd$traceDC[ traceMatrix[traced,3] ] <<- aHerd$traceDC[ traceMatrix[traced,3] ]+ 1
         if(Detailed){
       TraceDCMatOut<<- rbind(TraceDCMatOut,cbind(iteration,gTime,traceMatrix[traced,3]))
@@ -598,8 +646,7 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
         if(length(traced)>0)
           traced <- traced[runif(length(traced))<probSelectTIDC[traceMatrix[traced,4]]]
          if(length(traced)>0){
-   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,2] ] < gTime & 
-                      aHerd$timeToVisitZone1[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,2] ] < gTime  ] ## Not revisiting already scheduled visits. 
+   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,2] ] < gTime ] ## Not revisiting already scheduled visits.            
           if(length(traced)>0){
              tmp<-numeric(0)
              for(i in traced){
@@ -630,8 +677,7 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
 	  if(length(traced)>0)
    	    traced <- traced[runif(length(traced))<probSelectTIDC[traceMatrix[traced,4]]]
          if(length(traced)>0){
-   	     traced <- traced[ aHerd$timeToVisitTrace[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,3] ] < gTime &
-                      aHerd$timeToVisitZone1[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitZone2[ traceMatrix[traced,3] ] < gTime  ] ## Not revisiting already scheduled visits.           
+   	     traced <- traced[ aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] < gTime & aHerd$timeToVisitTraceIDC[ traceMatrix[traced,3] ] < gTime ]## Not revisiting already scheduled visits.                         
           if(length(traced)>0){
              tmp<-numeric(0)
              for(i in traced){
