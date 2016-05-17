@@ -238,7 +238,10 @@ list(
                           
           dInfTmp <- aInfHerd$getInfnessIDC(infHerdNums)
 
-          NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp * Reduction) ## Should differ for each call to INDflex  
+            if(!outbreakDetected)
+              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp) ## Should differ for each call to INDflex  
+            else
+              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp * Reduction) ## Should differ for each call to INDflex 
              
           if (!identical(infHerdNums,infHerdNumsLast)) {
              if(verbose)  print("Calculating newInfected distance dependent risk matrix") 
