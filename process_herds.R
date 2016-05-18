@@ -142,11 +142,11 @@ list(
                                                                                                                # exceed the herd size. if so, then it is restricted to the median number of moved animals based on the
                                                                                                               # the data from the movement datanase; 1/10 and 1/35 of the herd for weaners and sows, respectively
            InfnessHerds <- (1-(1-aInfHerd$getInfnessDC(infHerdNums))^MovedAnimals) # determine the probability that the contact is infectious
-           numDC        <- RandContacts(numDC * InfnessHerds)
+           numDC        <- RandContacts(numDC * InfnessHerds * aHerd[[RiskInf]][infHerdNums])
            
           if (!identical(infHerdNums,infHerdNumsLast)) {
              if(verbose)  print("Calculating newInfected distance matrix")
-             aHerd[[DCtoRiskDist]] <<- t(t(pMat$get(infHerdNums))*aHerd[[RiskInf]][infHerdNums])
+             aHerd[[DCtoRiskDist]] <<- t(t(pMat$get(infHerdNums)))
            }
            
            AllNewInfs = NULL
@@ -223,7 +223,7 @@ list(
 ###
 ### Flexible function to determine the indirect infections
 ###################################
- INDflex<-function(lambda,distprob,relCont,pMatIDC,RiskInf,probMatrix=NULL,Reduction=NULL,Abattoir=FALSE,label,checking=FALSE,tStart=0,tEnd=Inf){ ## RateIND represent the rate of contacts out of a farm
+ INDflex<-function(lambda,distprob,relCont,pMatIDC,RiskInf,probMatrix=NULL,Reduction=1,Abattoir=FALSE,label,checking=FALSE,tStart=0,tEnd=Inf){ ## RateIND represent the rate of contacts out of a farm
 
    pMat<-ConstpMat(Dist,probList[['DistCat']],distprob)
  
@@ -247,23 +247,15 @@ list(
                           
           dInfTmp <- aInfHerd$getInfnessIDC(infHerdNums)
 
-          NRC<-RandContacts(RandCont*dInfTmp)
-
-
+            if(!outbreakDetected)
+              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp) ## Should differ for each call to INDflex  
+            else
+              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp * Reduction) ## Should differ for each call to INDflex 
+             
           if (!identical(infHerdNums,infHerdNumsLast)) {
-            if(!is.null(Reduction)){
-              if(outbreakDetected){
-                if(verbose)  print("Calculating newInfected distance dependent risk matrix") 
-                aHerd[[pMatIDC]]<<- t(t(pMat$get(infHerdNums))* aHerd[[RiskInf]][infHerdNums] * Reduction) ## Should differ for each call to INDflex  
-                }
-              else{
-                aHerd[[pMatIDC]]<<- t(t(pMat$get(infHerdNums))* aHerd[[RiskInf]][infHerdNums])
-               }
-                 }
-            if(is.null(Reduction)){
-                aHerd[[pMatIDC]]<<- t(t(pMat$get(infHerdNums))* aHerd[[RiskInf]][infHerdNums])
-                }
-              }                     
+             if(verbose)  print("Calculating newInfected distance dependent risk matrix") 
+             aHerd[[pMatIDC]]<<- t(t(pMat$get(infHerdNums)))
+             }
 
            AllNewInfs = NULL
            AllNewAnimals = NULL
