@@ -71,6 +71,9 @@ sumTh<-function(step){
            DetFromSurvDead[iteration] <<- sum(aHerd$DiagSurvDead)
 
         ### Herds that are in the zones and must be visited after the model run is finished (last detected herd is culled).
+        ### Notice that we do not include the possibility of testing after with PCR for herds assigned to serology because of suspecion, 
+        ### as we do in the survHerds function during the model run, because at this stage we know that there are no clinical herds. 
+        ### The outbreak is finished and hence no suspesion will happen.
              if(2%in%SerologyTesting) aHerd$sampVisitSer[aHerd$timeToPV1>=gTime] <- aHerd$sampVisitSer[aHerd$timeToPV1>=gTime] + 1
              if(3%in%SerologyTesting) aHerd$sampVisitSer[aHerd$timeToSV1>=gTime] <- aHerd$sampVisitSer[aHerd$timeToSV1>=gTime] + 1
              if(4%in%SerologyTesting) aHerd$sampVisitSer[aHerd$timeToSV2>=gTime] <- aHerd$sampVisitSer[aHerd$timeToSV2>=gTime] + 1
@@ -132,10 +135,10 @@ sumTh<-function(step){
              if(3%in%SerologyTesting) SerTestingSV1[aHerd$timeToSV1>=gTime] <- TRUE
              if(4%in%SerologyTesting) SerTestingSV2[aHerd$timeToSV2>=gTime] <- TRUE
              SerTestingPV2[aHerd$timeToPV2>=gTime] <- TRUE
-             SerTestingTDC[aHerd$timeToTDC>=gTime] <- TRUE
+             SerTestingTDC[aHerd$timeToVisitTraceDC>=gTime] <- TRUE
              SerTestingTIDC[TEMP] <- TRUE ## TEMP is the herds that will be traced through IDC. determined above.
       if(sum(SerTestingPV1|SerTestingSV1|SerTestingSV2|SerTestingPV2|SerTestingTDC|SerTestingTIDC)>0){
-       SerTesting <- c(which(SerTestingPV1),which(SerTestingSV1),which(SerTestingSV2),which(SerTestingPV2),which(SerTestingTDC),which(SerTestingTIDC))
+       SerTesting <- c(which(SerTestingPV1),which(SerTestingSV1),which(SerTestingSV2),which(SerTestingPV2),which(SerTestingTDC),which(SerTestingTIDC))       
        SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SerTesting))
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -154,11 +157,13 @@ sumTh<-function(step){
              if(3%in%PCRTesting) TestingWPCRSV1[aHerd$timeToSV1>=gTime] <- TRUE
              if(4%in%PCRTesting) TestingWPCRSV2[aHerd$timeToSV2>=gTime] <- TRUE
              if(1%in%PCRTesting) TestingWPCRPV2[aHerd$timeToPV2>=gTime] <- TRUE
-             TestingWPCRTDC[aHerd$timeToTDC>=gTime] <- TRUE
+             TestingWPCRTDC[aHerd$timeToVisitTraceDC>=gTime] <- TRUE
              TestingWPCRTIDC[TEMP] <- TRUE
+
      if(sum(TestingWPCRPV1|TestingWPCRSV1|TestingWPCRSV2|TestingWPCRPV2|TestingWPCRTDC|TestingWPCRTIDC)>0){
       TestingWPCR <- c(which(TestingWPCRPV1),which(TestingWPCRSV1),which(TestingWPCRSV2),which(TestingWPCRPV2),which(TestingWPCRTDC),which(TestingWPCRTIDC))
       PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,TestingWPCR))
+
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
          NAMEPCRSH <- paste(runID,"PCRSurvayedHerds.txt",sep="-")
@@ -298,24 +303,26 @@ sumTh<-function(step){
       AllInfHerds <<- matrix(numeric(0),ncol=7)
                                                                                                                       
          if(Detailed){ 
-           NAMES    <- paste(runID,"SurvHerds.txt",sep="-")
-           NAMEP    <- paste(runID,"ProtHerds.txt",sep="-")
-           NAMETDC  <- paste(runID,"TDCHerds.txt",sep="-")
-           NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
+
+           #NAMES    <- paste(runID,"SurvHerds.txt",sep="-")
+           #NAMEP    <- paste(runID,"ProtHerds.txt",sep="-")
+           #NAMETDC  <- paste(runID,"TDCHerds.txt",sep="-")
+           #NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
            NAMED    <- paste(runID,"DepopHerds.txt",sep="-")
            NAMEPE   <- paste(runID,"PreEmpHerds.txt",sep="-")
           # NAMESD   <- paste(runID,"SurDeadHerds.txt",sep="-")
-           write.table(SurvZoneMatOut,NAMES,append=T,col.names = F,row.names=F)
-           write.table(ProtZoneMatOut,NAMEP,append=T,col.names = F,row.names=F)
-           write.table(TraceDCMatOut,NAMETDC,append=T,col.names = F,row.names=F)
-           write.table(TraceIDCMatOut,NAMETIDC,append=T,col.names = F,row.names=F)
+           #write.table(SurvZoneMatOut,NAMES,append=T,col.names = F,row.names=F)
+           #write.table(ProtZoneMatOut,NAMEP,append=T,col.names = F,row.names=F)
+           #write.table(TraceDCMatOut,NAMETDC,append=T,col.names = F,row.names=F)
+           #write.table(TraceIDCMatOut,NAMETIDC,append=T,col.names = F,row.names=F)
            write.table(DepopMatOut,NAMED,append=T,col.names = F,row.names=F)
            write.table(PreEmpMatOut,NAMEPE,append=T,col.names = F,row.names=F)
            #write.table(SurDeadMatOut,NAMESD,append=T,col.names = F,row.names=F)
- SurvZoneMatOut   <<- matrix(numeric(0),ncol=3)
- ProtZoneMatOut   <<- matrix(numeric(0),ncol=3)
- TraceDCMatOut    <<- matrix(numeric(0),ncol=3)
- TraceIDCMatOut   <<- matrix(numeric(0),ncol=3)
+
+# SurvZoneMatOut   <<- matrix(numeric(0),ncol=3)
+# ProtZoneMatOut   <<- matrix(numeric(0),ncol=3)
+# TraceDCMatOut    <<- matrix(numeric(0),ncol=3)
+# TraceIDCMatOut   <<- matrix(numeric(0),ncol=3)
  DepopMatOut      <<- matrix(numeric(0),ncol=3)
  PreEmpMatOut     <<- matrix(numeric(0),ncol=3)
  #SurDeadMatOut    <<- matrix(numeric(0),ncol=3)

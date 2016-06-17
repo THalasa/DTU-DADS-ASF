@@ -87,7 +87,7 @@ updateHerds <- function () {
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
          NAMED <- paste(runID,"DepopHerds.txt",sep="-")
-         write.table(DepopMatOut,NAMES,append=TRUE,col.names = F,row.names = F)
+         write.table(DepopMatOut,NAMED,append=TRUE,col.names = F,row.names = F)
          DepopMatOut<<- matrix(numeric(0),ncol=3)
          }
         }
@@ -239,10 +239,13 @@ list(
           dInfTmp <- aInfHerd$getInfnessIDC(infHerdNums)
 
             if(!outbreakDetected)
-              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp) ## Should differ for each call to INDflex  
+              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp) 
+ 
             else
-              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp * Reduction) ## Should differ for each call to INDflex 
-             
+              NRC<-RandContacts(RandCont* aHerd[[RiskInf]][infHerdNums] * dInfTmp * Reduction)  
+
+ 
+            
           if (!identical(infHerdNums,infHerdNumsLast)) {
              if(verbose)  print("Calculating newInfected distance dependent risk matrix") 
              aHerd[[pMatIDC]]<<- t(t(pMat$get(infHerdNums)))

@@ -71,7 +71,7 @@ ASFoptions<-function(...){
                  FirstDetPara=0.0255,   # proportion of sick and dead animals
                  ProbSelDiag=1,         # The probability of diagnosing a selected herd for diagnosis
                  Detailed=FALSE,        # should detailed surveillance output be printed
-                 DumpData=1000,         # Number of data lines that can be reached before
+                 DumpData=1,            # Number of data lines that can be reached before
                                         # data about survyed herds can be dumpped in the output file
                  ProbSelPV1=0,          # proportion of herds that will be tested (PCR) during first protection zone visit
                  ProbSelSV1=0,          # proportion of herds that will be tested (PCR) during first surveillance zone visit
@@ -124,8 +124,8 @@ probList=list(   ## Default distributions
                    "DIRinf3('LamAll',MovSwProb,'pMatAll','RiskDC',MovMatAll,restMovedSize=35,label=1)", 
                    "DIRinf3('LambdaWeaners',MovWeProb,'pMatWea','RiskDC',MovMatWean,restMovedSize=10,label=1)", 
                    "INDflex('LamAb',SwMovAbProb,'relDC','pMatMovAb','RiskAb',probMatrix=MovAb,Reduction=0.5,Abattoir=TRUE,label=2)",
-                   "INDflex('LamMRC',MedRiskMovProb,'relIMC','pMatMRC','RiskMRC',Reduction=NULL,label=3)",
-                   "INDflex('LamLRC',LowRiskMovProb,'relILC','pMatLRC','RiskLRC',Reduction=NULL,label=4)",
+                   "INDflex('LamMRC',MedRiskMovProb,'relIMC','pMatMRC','RiskMRC',Reduction=1,label=3)",
+                   "INDflex('LamLRC',LowRiskMovProb,'relILC','pMatLRC','RiskLRC',Reduction=1,label=4)",
                    "LASinf(localsize=2,label=5)"),
 
                  controlFunctions=c(    # Vector of functions used for movement controls, tracing and surveillance
@@ -191,7 +191,7 @@ probList=list(   ## Default distributions
                  cullTypes=c(1:18),     # herd types to be culled
                  CullDays=1:365,        # which days culling should be considered
                  ###########################################################
-                 ## Economic Values
+                 ## Economic Values. Costs in DKK
                  CostAnimPCR= 530,        # costs of PCR testing per animal
                  CostAnimSer= 68,         # costs of serology testing per animal
                  CosIndsendelse=179,      # costs of sending a package of max 1kg. from postDanmark 

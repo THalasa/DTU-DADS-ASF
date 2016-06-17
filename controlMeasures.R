@@ -90,16 +90,16 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,label){
               }
 
           
-  if(Detailed){
-      if(sum(inCircle)>0) SurvZoneMatOut<<- rbind(SurvZoneMatOut,cbind(iteration,gTime,which(inCircle)))
-      if(dim(SurvZoneMatOut)[1]>= DumpData){
+  #if(Detailed){
+   #   if(sum(inCircle)>0) SurvZoneMatOut<<- rbind(SurvZoneMatOut,cbind(iteration,gTime,which(inCircle)))
+    #  if(dim(SurvZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMES <- paste(runID,"SurvHerds.txt",sep="-")
-         write.table(SurvZoneMatOut,NAMES,append=TRUE,col.names = F,row.names = F)
-         SurvZoneMatOut<<- matrix(numeric(0),ncol=3)
-         }
-        }
+     #    NAMES <- paste(runID,"SurvHerds.txt",sep="-")
+      #   write.table(SurvZoneMatOut,NAMES,append=TRUE,col.names = F,row.names = F)
+       #  SurvZoneMatOut<<- matrix(numeric(0),ncol=3)
+        # }
+        #}
        
           aHerd$daysInZones[aHerd$inSurZone] <<- aHerd$daysInZones[aHerd$inSurZone] + 1
           aHerd$daysInSZones[aHerd$inSurZone] <<- aHerd$daysInSZones[aHerd$inSurZone] + 1
@@ -199,16 +199,16 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,label){
                              aHerd$timeToSV2[aHerd$inProtZone] <<- 1
         
 
-  if(Detailed){
-      if(sum(aHerd$inProtZone)>0) ProtZoneMatOut<<- rbind(ProtZoneMatOut,cbind(iteration,gTime,which(aHerd$inProtZone)))
-      if(dim(ProtZoneMatOut)[1]>= DumpData){
+  #if(Detailed){
+  #    if(sum(aHerd$inProtZone)>0) ProtZoneMatOut<<- rbind(ProtZoneMatOut,cbind(iteration,gTime,which(aHerd$inProtZone)))
+  #    if(dim(ProtZoneMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMEP <- paste(runID,"ProtHerds.txt",sep="-")
-         write.table(ProtZoneMatOut,NAMEP,append=TRUE,col.names = F,row.names = F)
-         ProtZoneMatOut<<- matrix(numeric(0),ncol=3)
-        }
-       }
+  #       NAMEP <- paste(runID,"ProtHerds.txt",sep="-")
+  #       write.table(ProtZoneMatOut,NAMEP,append=TRUE,col.names = F,row.names = F)
+  #       ProtZoneMatOut<<- matrix(numeric(0),ncol=3)
+  #      }
+  #     }
           aHerd$daysInZones[aHerd$inProtZone] <<- aHerd$daysInZones[aHerd$inProtZone] + 1
           aHerd$daysInPZones[aHerd$inProtZone] <<- aHerd$daysInPZones[aHerd$inProtZone] + 1
           aHerd$timeSatInPZone[(aHerd$inProtZone)&aHerd$timeSatInPZone==0] <<- gTime
@@ -261,6 +261,7 @@ list(
  ## Find herds that have to get the tracing visit of direct contacts (DC)
    setQueue6 <- aHerd$timeToVisitTraceDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))  
 
+
 ## Randomly select a proportion of the herds for PV1 and SV1 to be tested
  if(sum(setQueue2)>0) SerSetQueue2 <- rbinom(sum(setQueue2), size=1, prob=ProbSelPV1)
  if(sum(setQueue3)>0) SerSetQueue3 <- rbinom(sum(setQueue3), size=1, prob=ProbSelSV1)
@@ -283,13 +284,16 @@ setQueue6.1 <- matrix(numeric(0),ncol=4)
  if(sum(setQueue5)>0) setQueue5.1 <- cbind(which(setQueue5),gTime,SerSetQueue5,ifelse(SerSetQueue5==1,5,0))
  if(sum(setQueue6)>0) setQueue6.1 <- cbind(which(setQueue6),gTime,1,6)
 
+
+
 ### Set herds that are in the zones or traced for queuing to surveillence and remove duplicates
+## here we priortise the ones that will have PCR and Serology for sure.
          if(dim(setQueue1.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue1.1)
+         if(dim(setQueue6.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue6.1)
+         if(dim(setQueue5.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue5.1)
          if(dim(setQueue2.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue2.1)
          if(dim(setQueue3.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue3.1)
          if(dim(setQueue4.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue4.1)
-         if(dim(setQueue5.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue5.1)
-         if(dim(setQueue6.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue6.1)
 
          if(dim(zoneQueue)[1]>0){
            zoneQueue<<-zoneQueue[!duplicated(zoneQueue[,1]),,drop=FALSE]        
@@ -297,7 +301,6 @@ setQueue6.1 <- matrix(numeric(0),ncol=4)
            tmp <- which(zoneQueue[,1]%in%depopQueue[,1] | aHerd$Diagnosed[zoneQueue[,1]] | aHerd$status[zoneQueue[,1]]==6)
            if(length(tmp)>0) zoneQueue<<-zoneQueue[-tmp,,drop=FALSE]  
            }
-
 ###### Calculate the total number of herds in queue today.
 TotNumQueue <<- 0
 TotNumQueue <<- dim(zoneQueue)[1]
@@ -339,6 +342,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
                         aHerd$DiagSurv[toBeCulled]      <<- TRUE
                         aHerd$diagnosisTime[toBeCulled] <<- gTime
                         aInfHerd$setDiagnosed(toBeCulled)
+
                       }# End of if(length....
                    }#End of if
                  }#End of if 
@@ -396,7 +400,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }# End of if
                   }#End of if
 
-# This part includes detection of herds based on serology testing. 
+# This part includes detection of herds based on PCR testing. 
     IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting ,1]
     aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
     toBeCulledPCR <- which((aHerd$ID%in%IndexPCR) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
@@ -424,6 +428,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
      if(sum(SurvMat2[,3]==0)>0)                 ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,SurvMat2[SurvMat2[,3]==0,1]))
      if(sum(SurvMat2[,4]%in%SerologyTesting)>0) SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]))
      if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,c(toBeCulledSerClPCR,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1])))
+
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -555,16 +560,16 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
             if(length(traced)>0){
               aHerd$timeToVisitTraceDC[ traceMatrix[traced,2] ] <<- delayVisit[ traceMatrix[traced,2] ] + gTime
               aHerd$traceDC[ traceMatrix[traced,2] ]            <<- aHerd$traceDC[ traceMatrix[traced,2] ]+ 1 
-    if(Detailed){
-      TraceDCMatOut<<- rbind(TraceDCMatOut,cbind(iteration,gTime,traceMatrix[traced,2]))
-      if(dim(TraceDCMatOut)[1]>= DumpData){
+    #if(Detailed){
+    #  TraceDCMatOut<<- rbind(TraceDCMatOut,cbind(iteration,gTime,traceMatrix[traced,2]))
+    #  if(dim(TraceDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETDC <- paste(runID,"TDCHerds.txt",sep="-")
-         write.table(TraceDCMatOut,NAMETDC,append=TRUE,col.names = F,row.names = F)
-         TraceDCMatOut<<- matrix(numeric(0),ncol=3)
-        }
-       }
+    #     NAMETDC <- paste(runID,"TDCHerds.txt",sep="-")
+    #     write.table(TraceDCMatOut,NAMETDC,append=TRUE,col.names = F,row.names = F)
+    #     TraceDCMatOut<<- matrix(numeric(0),ncol=3)
+    #    }
+    #   }
          }#End of if(length..
        }#End of if(sum...
        }
@@ -582,16 +587,16 @@ traceDC <- function(prob,probdetect=1,delay,tracetime,duration,label){ ### prob 
             if(length(traced)>0){
            aHerd$timeToVisitTraceDC[ traceMatrix[traced,3] ] <<- delayVisit[ traceMatrix[traced,3] ] + gTime
            aHerd$traceDC[ traceMatrix[traced,3] ] <<- aHerd$traceDC[ traceMatrix[traced,3] ]+ 1
-        if(Detailed){
-      TraceDCMatOut<<- rbind(TraceDCMatOut,cbind(iteration,gTime,traceMatrix[traced,3]))
-      if(dim(TraceDCMatOut)[1]>= DumpData){
+      #if(Detailed){
+      #TraceDCMatOut<<- rbind(TraceDCMatOut,cbind(iteration,gTime,traceMatrix[traced,3]))
+      #if(dim(TraceDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETDC <- paste(runID,"TDCHerds.txt",sep="-")
-         write.table(TraceDCMatOut,NAMETDC,append=TRUE,col.names = F,row.names = F)
-         TraceDCMatOut<<- matrix(numeric(0),ncol=3)
-        }
-       }
+      #   NAMETDC <- paste(runID,"TDCHerds.txt",sep="-")
+      #   write.table(TraceDCMatOut,NAMETDC,append=TRUE,col.names = F,row.names = F)
+      #   TraceDCMatOut<<- matrix(numeric(0),ncol=3)
+      #  }
+      # }
           }#End of if(length..
          }#End of if(sum... 
         }         
@@ -654,16 +659,16 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
                 }
              aHerd$timeToVisitTraceIDC[ traceMatrix[traced,2] ] <<- tmp + gTime
              aHerd$traceIDC[ traceMatrix[traced,2] ] <<- aHerd$traceIDC[ traceMatrix[traced,2] ] + 1
-    if(Detailed){
-      TraceIDCMatOut<<- rbind(TraceIDCMatOut,cbind(iteration,gTime,traceMatrix[traced,2]))
-      if(dim(TraceIDCMatOut)[1]>= DumpData){
+    #if(Detailed){
+    #  TraceIDCMatOut<<- rbind(TraceIDCMatOut,cbind(iteration,gTime,traceMatrix[traced,2]))
+    #  if(dim(TraceIDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
-         write.table(TraceIDCMatOut,NAMETIDC,append=TRUE,col.names = F,row.names = F)
-         TraceIDCMatOut<<- matrix(numeric(0),ncol=3)
-        }
-       }
+    #     NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
+    #     write.table(TraceIDCMatOut,NAMETIDC,append=TRUE,col.names = F,row.names = F)
+    #     TraceIDCMatOut<<- matrix(numeric(0),ncol=3)
+    #    }
+    #   }
           }#End of if(length
          }#End of if  
         }
@@ -685,16 +690,16 @@ traceIDC <- function(timetotrace,delayvisitMed,delayvisitLow,duration,label){
                 }
             aHerd$timeToVisitTraceIDC[ traceMatrix[traced,3] ] <<- tmp + gTime 
             aHerd$traceIDC[ traceMatrix[traced,3] ] <<- aHerd$traceIDC[ traceMatrix[traced,3] ] + 1
-    if(Detailed){
-      TraceIDCMatOut<<- rbind(TraceIDCMatOut,cbind(iteration,gTime,traceMatrix[traced,3]))
-      if(dim(TraceIDCMatOut)[1]>= DumpData){
+   # if(Detailed){
+   #   TraceIDCMatOut<<- rbind(TraceIDCMatOut,cbind(iteration,gTime,traceMatrix[traced,3]))
+   #   if(dim(TraceIDCMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
-         NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
-         write.table(TraceIDCMatOut,NAMETIDC,append=TRUE,col.names = F,row.names = F)
-         TraceIDCMatOut <<- matrix(numeric(0),ncol=3)
-        }
-       }
+   #      NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
+   #      write.table(TraceIDCMatOut,NAMETIDC,append=TRUE,col.names = F,row.names = F)
+   #      TraceIDCMatOut <<- matrix(numeric(0),ncol=3)
+   #     }
+   #    }
             }#End of if(length...
            }#End of if(sum...
           }
