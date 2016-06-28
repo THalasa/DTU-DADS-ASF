@@ -114,6 +114,8 @@ createASFvars <- function() {
    MovMatAll<<-as.matrix(read.table(fileMovMatAll,sep=";",dec=",")) 
    MovMatWean<<-as.matrix(read.table(fileMovMatWean,sep=";",dec=","))
    MovAb<<-as.matrix(read.table(fileMovAb,sep=";",dec=",")) 
+   BatchAnimAll <<-as.matrix(read.table(fileBatchAnimAll,sep=";",dec=",")) 
+   BatchAnimWea <<-as.matrix(read.table(fileBatchAnimWea,sep=";",dec=",")) 
 
 eval.parent(expression(MovSwProb<-NULL))
    MovSwProb<<-as.list(read.table(fileMovSwProb,sep=";",dec=","))
@@ -209,30 +211,33 @@ eval.parent(expression(toPlot2<- NULL))#just to test
   }
 
   ## Initiate distributions of animals moved and distribute them over the different herdsize categories
-   HerdSizeCategories <- sort(unique(aHerd$herdSizeCat)) 
-   HerdSizeCatDistAO  <- parse(text=c('round(rpert(n,1,1,2))','round(rpert(n,1,61,196))','round(rpert(n,1,85,415))','round(rpert(n,1,110,433))','round(rpert(n,1,81,371))'))
-   HerdSizeCatDist    <- parse(text=c('round(rpert(n,1,1,2))','round(rpert(n,1,25,290))','round(rpert(n,1,304,800))','round(rpert(n,1,300,910))','round(rpert(n,1,290,800))'))
-   
-   aHerd$NumMovAnimal <<- rep(0,length(aHerd$herdType))
-   for(i in HerdSizeCategories){
-    Index <- aHerd$herdType==1&aHerd$herdSizeCat==HerdSizeCategories[i]
-    aHerd$NumMovAnimal[Index] <<- rep(HerdSizeCatDistAO[i],sum(Index))
-   }
-   for(i in HerdSizeCategories){
-    for(j in 2:10){
-    Index <- aHerd$herdType==j&aHerd$herdSizeCat==HerdSizeCategories[i]
-    aHerd$NumMovAnimal[Index] <<- rep(HerdSizeCatDist[i],sum(Index))
+   HerdSizeCategories <- sort(unique(aHerd$herdSizeCat))
+   HerdTypesCat <- sort(unique(aHerd$herdType))
+    BatchAnimAll <- as.list(data.frame(t(BatchAnimAll)))
+    BatchAnimWea <- as.list(data.frame(t(BatchAnimWea)))
+    for (i in 1: length(BatchAnimAll)){
+      BatchAnimAll[[i]] <- parse(text=as.character(BatchAnimAll[[i]]))
+      BatchAnimWea[[i]] <- parse(text=as.character(BatchAnimWea[[i]]))
     }
-   }
+   
+    aHerd$NumMovAll <<- rep(0,length(aHerd$herdType))
+    aHerd$NumMovWea <<- rep(0,length(aHerd$herdType))
+    for(i in HerdSizeCategories){
+      for (j in HerdTypesCat){
+        Index <- aHerd$herdType==j & aHerd$herdSizeCat==HerdSizeCategories[i]
+        aHerd$NumMovAll[Index] <<- rep(BatchAnimAll[[j]][i],sum(Index))
+        aHerd$NumMovWea[Index] <<- rep(BatchAnimWea[[j]][i],sum(Index))
+      }
+    }   
 
  eval.parent(expression(AllInfHerds <- NULL))
  AllInfHerds <<- matrix(numeric(0),ncol=7)
- NAMEInf <- paste(runID,"AllInfHerds.txt",sep="-")
+ NAMEInf <- paste0("../ASFoutputs/",runID,"-AllInfHerds.txt")
  write.table(AllInfHerds,NAMEInf,sep=" ")
 
  eval.parent(expression(SumResOut  <- NULL))
  SumResOut  <<- matrix(numeric(0),ncol=31)
- NAME <- paste(runID,"ASF.txt",sep="-") 
+ NAME <- paste0("../ASFoutputs/",runID,"-ASF.txt") 
  write.table(SumResOut,NAME,sep=" ")
 ######################################################################
 ### initiate the Matrix that includes surveyed herds (TH) Oct 2015 ###
@@ -261,15 +266,15 @@ if(Detailed){
  PreEmpMatOut     <<- matrix(numeric(0),ncol=3)
 # SurDeadMatOut    <<- matrix(numeric(0),ncol=3)
 
- NAMES    <- paste(runID,"SurvHerds.txt",sep="-")
- NAMEP    <- paste(runID,"ProtHerds.txt",sep="-")
- NAMEClSH <- paste(runID,"ClSurvayedHerds.txt",sep="-")
- NAMESerSH<- paste(runID,"SerSurvayedHerds.txt",sep="-")
- NAMEPCRSH<- paste(runID,"PCRSurvayedHerds.txt",sep="-")
- NAMETDC  <- paste(runID,"TDCHerds.txt",sep="-")
- NAMETIDC <- paste(runID,"TIDCHerds.txt",sep="-")
- NAMED    <- paste(runID,"DepopHerds.txt",sep="-")
- NAMEPE   <- paste(runID,"PreEmpHerds.txt",sep="-")
+ NAMES    <- paste0("../ASFoutputs/",runID,"-SurvHerds.txt")
+ NAMEP    <- paste0("../ASFoutputs/",runID,"-ProtHerds.txt")
+ NAMEClSH <- paste0("../ASFoutputs/",runID,"-ClSurvayedHerds.txt")
+ NAMESerSH<- paste0("../ASFoutputs/",runID,"-SerSurvayedHerds.txt")
+ NAMEPCRSH<- paste0("../ASFoutputs/",runID,"-PCRSurvayedHerds.txt")
+ NAMETDC  <- paste0("../ASFoutputs/",runID,"-TDCHerds.txt")
+ NAMETIDC <- paste0("../ASFoutputs/",runID,"-TIDCHerds.txt")
+ NAMED    <- paste0("../ASFoutputs/",runID,"-DepopHerds.txt")
+ NAMEPE   <- paste0("../ASFoutputs/",runID,"-PreEmpHerds.txt")
 # NAMESD   <- paste(runID,"SurDeadHerds.txt",sep="-")
 
  write.table(SurvZoneMatOut,NAMES,col.names = F,row.names=F)
