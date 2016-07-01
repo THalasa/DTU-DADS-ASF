@@ -347,7 +347,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }#End of if
                  }#End of if 
 
-# This part includes detection of herds based on serology testing. 
+# This part includes detection of herds based on serology testing. Suspesion and testing is dependent on whether the herd is clinical or not.
      IndexSer <-SurvMat2[SurvMat2[,4]%in%SerologyTesting ,1]
      aHerd$sampVisitSer[IndexSer] <<- aHerd$sampVisitSer[IndexSer] + 1 
      toBeCulledSer   <- which((aHerd$ID%in%IndexSer) & !(aHerd$Diagnosed) & (aHerd$status!=4))
@@ -365,15 +365,18 @@ TotNumQueue <<- dim(zoneQueue)[1]
                     aInfHerd$setDiagnosed(toBeCulledSer)
                    }# End of if
                   }#End of if
-#### detection of herds following surveillance visit. If the herd is clinical and fits the criteria for suspesion for ASF, the herd will be tested by PCR and serology.
+#### detection of herds following surveillance visit (not including tracing. it comes later). If the herd is clinical and fits the criteria for suspesion for ASF, the herd will be tested by PCR and serology.
 #### If there is no suspesion, the herd is tested only by serology and hence probability of detection is based only on survived animals following infection.
-     toBeCulledSerCl <- which((aHerd$ID%in%IndexSer) & !(aHerd$Diagnosed) & (aHerd$status==4))
-     toBeCulledSerClPCR <- integer(0)
+     IndexSer2 <-SurvMat2[SurvMat2[,4]%in%SerologyTesting ,1]
+     toBeCulledSerCl <- which((aHerd$ID%in%IndexSer2) & !(aHerd$Diagnosed) & (aHerd$status==4))
+     TestedSerClPCR <- integer(0)
                  if(length(toBeCulledSerCl)>0){
                     SickTime   <- aInfHerd$getTClic(toBeCulledSerCl)
                     ExpectMort <- (gTime-SickTime) * aHerd$ExpMortality[toBeCulledSerCl]
                     tmp        <- aHerd$Mortality[toBeCulledSerCl] >= (ExpectMort * MortalityIncreaseZone) & aHerd$Mortality[toBeCulledSerCl] >= NumDeadAnimSurv
                     toBeCulledSerClPCR<- toBeCulledSerCl[tmp]
+                    ## The herds that will be tested by PCR.
+                    TestedSerClPCR <- toBeCulledSerClPCR
                     if(length(toBeCulledSerClPCR)>0){
                       aHerd$sampVisitPCR[toBeCulledSerClPCR] <<- aHerd$sampVisitPCR[toBeCulledSerClPCR] + 1 
                       TMP1 <- aInfHerd$getInfected(toBeCulledSerClPCR)
@@ -400,8 +403,10 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }# End of if
                   }#End of if
 
-# This part includes detection of herds based on PCR testing. 
-    IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting ,1]
+# This part includes detection of herds based on PCR testing. Here we still allow that the herd can be tested by PCR, if not tested
+# during the previous step. IF the herd has been tested within a day, then the herd should not be tested again during the same day
+# by the same test regardless the reason for testing.
+    IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting & !SurvMat2[,1]%in%TestedSerClPCR,1]
     aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
     toBeCulledPCR <- which((aHerd$ID%in%IndexPCR) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
                  if(length(toBeCulledPCR)>0){
@@ -427,7 +432,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
   if(Detailed){
      if(sum(SurvMat2[,3]==0)>0)                 ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,SurvMat2[SurvMat2[,3]==0,1]))
      if(sum(SurvMat2[,4]%in%SerologyTesting)>0) SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]))
-     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,c(toBeCulledSerClPCR,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1])))
+     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,unique(c(TestedSerClPCR,IndexPCR))))
 
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
