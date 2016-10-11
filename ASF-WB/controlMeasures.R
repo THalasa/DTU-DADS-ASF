@@ -252,6 +252,8 @@ list(
    setQueue3 <- FALSE
    }
 
+#print(sum(setQueue3))
+
  ## Find herds that have to get the SV2
    setQueue4 <- aHerd$timeToSV2==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))
 
@@ -301,6 +303,7 @@ setQueue6.1 <- matrix(numeric(0),ncol=4)
            tmp <- which(zoneQueue[,1]%in%depopQueue[,1] | aHerd$Diagnosed[zoneQueue[,1]] | aHerd$status[zoneQueue[,1]]==6)
            if(length(tmp)>0) zoneQueue<<-zoneQueue[-tmp,,drop=FALSE]  
            }
+
 ###### Calculate the total number of herds in queue today.
 TotNumQueue <<- 0
 TotNumQueue <<- dim(zoneQueue)[1]
@@ -308,6 +311,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
 ### Move herds from queue to being Surveyed
    if(dim(zoneQueue)[1]>0){
      SurvMat <- zoneQueue
+#if(iteration==2) print(SurvMat)
        
      survInd <- 1:dim(SurvMat)[1]  
        if(length(survInd) <= (CapSurvay)) 
@@ -316,9 +320,11 @@ TotNumQueue <<- dim(zoneQueue)[1]
           toSurv <- survInd[1:sum(1:length(survInd)<=CapSurvay)]
 
      SurvMat2 <- SurvMat[toSurv,,drop=FALSE]
+#if(iteration==2) print(SurvMat2)
 
 ### Survey herds: following clinical surveillance, herds maybe tested (serology+PCR) once the herd has doubled mortality (including sick animals) 
     IndexCl<-SurvMat2[SurvMat2[,3]==0,1]
+
     aHerd$VisitClInspect[IndexCl] <<- aHerd$VisitClInspect[IndexCl] + 1
 
     toBeCulled <- which((aHerd$ID%in%IndexCl) & !(aHerd$Diagnosed) & (aHerd$status==4))
@@ -403,15 +409,10 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }# End of if
                   }#End of if
 
-<<<<<<< HEAD
 # This part includes detection of herds based on PCR testing. Here we still allow that the herd can be tested by PCR, if not tested
 # during the previous step. IF the herd has been tested within a day, then the herd should not be tested again during the same day
 # by the same test regardless the reason for testing.
     IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting & !SurvMat2[,1]%in%TestedSerClPCR,1]
-=======
-# This part includes detection of herds based on PCR testing. 
-    IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting ,1]
->>>>>>> 3732f38ca3a285b883db936e95ddfbf80c486c23
     aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
     toBeCulledPCR <- which((aHerd$ID%in%IndexPCR) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
                  if(length(toBeCulledPCR)>0){
@@ -437,11 +438,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
   if(Detailed){
      if(sum(SurvMat2[,3]==0)>0)                 ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,SurvMat2[SurvMat2[,3]==0,1]))
      if(sum(SurvMat2[,4]%in%SerologyTesting)>0) SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]))
-<<<<<<< HEAD
      if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,unique(c(TestedSerClPCR,IndexPCR))))
-=======
-     if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,c(toBeCulledSerClPCR,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1])))
->>>>>>> 3732f38ca3a285b883db936e95ddfbf80c486c23
 
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
@@ -457,13 +454,13 @@ TotNumQueue <<- dim(zoneQueue)[1]
          write.table(SerSurvMatOut,NAMESerSH,append=TRUE,col.names = F,row.names = F)
          SerSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
-    # if(dim(PCRSurvMatOut)[1]>= DumpData){
+     if(dim(PCRSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
          NAMEPCRSH <- paste(runID,"PCRSurvayedHerds.txt",sep="-")
          write.table(PCRSurvMatOut,NAMEPCRSH,append=TRUE,col.names = F,row.names = F)
          PCRSurvMatOut <<- matrix(numeric(0),ncol=3)
-      #   }
+         }
         }
 
          aHerd$visitCount[SurvMat2[,1]]  <<- aHerd$visitCount[SurvMat2[,1]] + 1
