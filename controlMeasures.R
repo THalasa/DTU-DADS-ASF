@@ -261,6 +261,7 @@ list(
  ## Find herds that have to get the tracing visit of direct contacts (DC)
    setQueue6 <- aHerd$timeToVisitTraceDC==gTime & !(aHerd$Diagnosed) & !(aHerd$status%in%c(5,6))  
 
+
 ## Randomly select a proportion of the herds for PV1 and SV1 to be tested
  if(sum(setQueue2)>0) SerSetQueue2 <- rbinom(sum(setQueue2), size=1, prob=ProbSelPV1)
  if(sum(setQueue3)>0) SerSetQueue3 <- rbinom(sum(setQueue3), size=1, prob=ProbSelSV1)
@@ -283,13 +284,16 @@ setQueue6.1 <- matrix(numeric(0),ncol=4)
  if(sum(setQueue5)>0) setQueue5.1 <- cbind(which(setQueue5),gTime,SerSetQueue5,ifelse(SerSetQueue5==1,5,0))
  if(sum(setQueue6)>0) setQueue6.1 <- cbind(which(setQueue6),gTime,1,6)
 
+
+
 ### Set herds that are in the zones or traced for queuing to surveillence and remove duplicates
+## here we priortise the ones that will have PCR and Serology for sure.
          if(dim(setQueue1.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue1.1)
+         if(dim(setQueue6.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue6.1)
+         if(dim(setQueue5.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue5.1)
          if(dim(setQueue2.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue2.1)
          if(dim(setQueue3.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue3.1)
          if(dim(setQueue4.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue4.1)
-         if(dim(setQueue5.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue5.1)
-         if(dim(setQueue6.1)[1]>0) zoneQueue <<- rbind(zoneQueue,setQueue6.1)
 
          if(dim(zoneQueue)[1]>0){
            zoneQueue<<-zoneQueue[!duplicated(zoneQueue[,1]),,drop=FALSE]        
@@ -297,7 +301,6 @@ setQueue6.1 <- matrix(numeric(0),ncol=4)
            tmp <- which(zoneQueue[,1]%in%depopQueue[,1] | aHerd$Diagnosed[zoneQueue[,1]] | aHerd$status[zoneQueue[,1]]==6)
            if(length(tmp)>0) zoneQueue<<-zoneQueue[-tmp,,drop=FALSE]  
            }
-
 ###### Calculate the total number of herds in queue today.
 TotNumQueue <<- 0
 TotNumQueue <<- dim(zoneQueue)[1]
@@ -339,6 +342,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
                         aHerd$DiagSurv[toBeCulled]      <<- TRUE
                         aHerd$diagnosisTime[toBeCulled] <<- gTime
                         aInfHerd$setDiagnosed(toBeCulled)
+
                       }# End of if(length....
                    }#End of if
                  }#End of if 
@@ -396,7 +400,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
                    }# End of if
                   }#End of if
 
-# This part includes detection of herds based on serology testing. 
+# This part includes detection of herds based on PCR testing. 
     IndexPCR <-SurvMat2[SurvMat2[,4]%in%PCRTesting ,1]
     aHerd$sampVisitPCR[IndexPCR] <<- aHerd$sampVisitPCR[IndexPCR] + 1 
     toBeCulledPCR <- which((aHerd$ID%in%IndexPCR) & !(aHerd$Diagnosed)  & (aHerd$status%in%c(3,4))) 
@@ -424,6 +428,7 @@ TotNumQueue <<- dim(zoneQueue)[1]
      if(sum(SurvMat2[,3]==0)>0)                 ClSurvMatOut  <<- rbind(ClSurvMatOut,cbind(iteration,gTime,SurvMat2[SurvMat2[,3]==0,1]))
      if(sum(SurvMat2[,4]%in%SerologyTesting)>0) SerSurvMatOut <<- rbind(SerSurvMatOut,cbind(iteration,gTime,SurvMat2[ SurvMat2[,4]%in%SerologyTesting ,1]))
      if(sum(SurvMat2[,4]%in%PCRTesting)>0)      PCRSurvMatOut <<- rbind(PCRSurvMatOut,cbind(iteration,gTime,c(toBeCulledSerClPCR,SurvMat2[ SurvMat2[,4]%in%PCRTesting ,1])))
+
       if(dim(ClSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
@@ -438,13 +443,13 @@ TotNumQueue <<- dim(zoneQueue)[1]
          write.table(SerSurvMatOut,NAMESerSH,append=TRUE,col.names = F,row.names = F)
          SerSurvMatOut <<- matrix(numeric(0),ncol=3)
          }
-     if(dim(PCRSurvMatOut)[1]>= DumpData){
+    # if(dim(PCRSurvMatOut)[1]>= DumpData){
 ### NAME here will be exactly the same as that in the initialization file, 
 ### so no worries; no overwriting will happen ;-) (TH)
          NAMEPCRSH <- paste0("../ASFoutputs/",runID,"-PCRSurvayedHerds.txt")
          write.table(PCRSurvMatOut,NAMEPCRSH,append=TRUE,col.names = F,row.names = F)
          PCRSurvMatOut <<- matrix(numeric(0),ncol=3)
-         }
+      #   }
         }
 
          aHerd$visitCount[SurvMat2[,1]]  <<- aHerd$visitCount[SurvMat2[,1]] + 1

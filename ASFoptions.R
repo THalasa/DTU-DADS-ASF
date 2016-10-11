@@ -73,9 +73,9 @@ ASFoptions<-function(...){
                  Detailed=FALSE,        # should detailed surveillance output be printed
                  DumpData=1000,         # Number of data lines that can be reached before
                                         # data about survyed herds can be dumpped in the output file
-                 ProbSelPV1=1,          # proportion of herds that will be tested (PCR) during first protection zone visit
-                 ProbSelSV1=1,          # proportion of herds that will be tested (PCR) during first surveillance zone visit
-                 ProbSelSV2=1,          # proportion of herds that will be tested during second surveillance zone visit
+                 ProbSelPV1=0,          # proportion of herds that will be tested (PCR) during first protection zone visit
+                 ProbSelSV1=0,          # proportion of herds that will be tested (PCR) during first surveillance zone visit
+                 ProbSelSV2=0,          # proportion of herds that will be tested during second surveillance zone visit
                  ProbSelTIDC=0.1,       # proportion of traced herds from indirect contacts that will be tested (PCR) visit
                  SecSurVisitOLSZ=0,     # number of days. herds in overlapping surveillance zones will get a new visit every SecSurVisitOLSZ days.
                  DelayStartVisitOLPZ=0, # number of days. herds in overlapping protection zone will get a new visit every DelayStartVisitOLPZ once the
