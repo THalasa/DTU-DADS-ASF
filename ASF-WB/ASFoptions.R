@@ -140,8 +140,8 @@ LocalSPWB=c(0.0006,0.0002,0.0000015,0),# the categories represent distances of h
                  controlFunctions=c(    # Vector of functions used for movement controls, tracing and surveillance
                    "controlAll(effectDC='rpert(n,0.95,0.98,1)',label='SS')",
                    "controlDiag(effectDC=1,effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.95,0.98,1)',label='CD')",
-                   "SurvZone(size=10,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',label='SZ')",
-                   "ProtZone(size=3,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',label='PZ')",
+                   "SurvZone(size=10,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',effectWB='rpert(n,0.95,0.98,1)',label='SZ')",
+                   "ProtZone(size=3,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',effectWB='rpert(n,0.95,0.98,1)',label='PZ')",
                    "traceDC(prob=0.99,probdetect=0.95,delay='round(rpert(n,1,2,3))',tracetime='round(runif(n,0,2))',duration=30,label='traceDirect')",
                    "traceIDC(timetotrace='round(runif(n,0,4))',delayvisitMed='round(rpert(n,0,1,2))',delayvisitLow='round(rpert(n,0,2,4))',duration=30,label='traceInDirect')",
                    "SurvZonesHerds()"),
