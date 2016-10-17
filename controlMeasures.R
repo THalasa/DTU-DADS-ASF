@@ -26,7 +26,7 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,effectWB,label){
          effDCSZ<<-1-eval(effectDC,list(n=gMaxHerds))
          effIMCSZ<<-1-eval(effectIMC,list(n=gMaxHerds))
          effILCSZ<<-1-eval(effectILC,list(n=gMaxHerds))
-         effWBSZ<<-1-eval(effectWB,list(n=gMaxHerds))
+         effWBSZ<<-1-eval(effWBSZ,list(n=gMaxHerds))
          SZcenters<<-rep(FALSE,gMaxHerds)
        }
        ,
@@ -132,8 +132,6 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,effectWB,label){
     effectIMC<-parse(text=effectIMC)
   if (!is.expression(effectILC))
     effectILC<-parse(text=effectILC)
-  if (!is.expression(effectWB))
-    effectWB<-parse(text=effectWB)
 
   effDCPZ<-numeric(0)
   effIMCPZ<-numeric(0)
@@ -146,7 +144,7 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,effectWB,label){
          effDCPZ<<-1-eval(effectDC,list(n=gMaxHerds))
          effIMCPZ<<-1-eval(effectIMC,list(n=gMaxHerds))
          effILCPZ<<-1-eval(effectILC,list(n=gMaxHerds))
-         effWBPZ<<-1-eval(effectWB,list(n=gMaxHerds))
+         effWBPZ<<-1-eval(effWBPZ,list(n=gMaxHerds))
          PZcenters<<-rep(FALSE,gMaxHerds)
        }
        ,
@@ -179,7 +177,7 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,effectWB,label){
             aHerd$relDC[aHerd$inProtZone] <<-pmin(aHerd$relDC[aHerd$inProtZone],effDCPZ[aHerd$inProtZone])
             aHerd$relIMC[aHerd$inProtZone]<<-pmin(aHerd$relIMC[aHerd$inProtZone],effIMCPZ[aHerd$inProtZone])
             aHerd$relILC[aHerd$inProtZone]<<-pmin(aHerd$relILC[aHerd$inProtZone],effILCPZ[aHerd$inProtZone])
-            aHerd$relWB[aHerd$inProtZone] <<-pmin(aHerd$relWB[aHerd$inProtZone],effWBPZ[aHerd$inProtZone])
+            aHerd$relWB[aHerd$inProtZone] <<-pmin(aHerd$relWB[aHerd$inProtZone],effWBPZ[aHerd$inProtZone])     
 
           ### here herds in the protection zones are processed.
             ## herds that had not been visited before or had been out of a protection zone and then came again in a protection zone are selected for 2 visits (PV1 and PV2)

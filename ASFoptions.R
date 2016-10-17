@@ -119,6 +119,13 @@ probList=list(   ## Default distributions
   distcat=c(0,1,3,10,15,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,300)
 
   ),
+LambdaWB=c(0.10824,0.055,0)# the categories represent distances of highRisk, lowRisk and noRisk herds
+                 ,
+LocalSPWB=c(0.0006,0.0002,0.0000015,0),# the categories represent distances of highRisk (within 0.5km), medium Risk (from 0.5 to 1km) 
+                                       # low risk (from 1 to 2km) and no Risk herds (>2km)
+                                       # these values are from Boklund et al. 2008 and reduced 20 fold, due to 
+                                       # lower spread of ASF than CSF (Nigsch et al., 2013) and smaller herd sizes
+                                       # of wild boar
                  
                  newInfFunctions=c(     # Vector of functions used to make new infections (including parameters).
                    "DIRinf3('LamAll',MovSwProb,'pMatAll','RiskDC',MovMatAll,restMovedSize=35,label=1)", 
@@ -126,13 +133,15 @@ probList=list(   ## Default distributions
                    "INDflex('LamAb',SwMovAbProb,'relDC','pMatMovAb','RiskAb',probMatrix=MovAb,Reduction=0.5,Abattoir=TRUE,label=2)",
                    "INDflex('LamMRC',MedRiskMovProb,'relIMC','pMatMRC','RiskMRC',Reduction=1,label=3)",
                    "INDflex('LamLRC',LowRiskMovProb,'relILC','pMatLRC','RiskLRC',Reduction=1,label=4)",
-                   "LASinf(localsize=2,label=5)"),
+                   "LASinf(localsize=2,label=5)",
+                   "WildBoar(relCont='relWB',RiskVar='RiskCatToWB2',ProbCont='RiskWB',label=6)",
+                   "LSWildBoar(RiskVar='LocSpWB',label=7)"),
 
                  controlFunctions=c(    # Vector of functions used for movement controls, tracing and surveillance
                    "controlAll(effectDC='rpert(n,0.95,0.98,1)',label='SS')",
                    "controlDiag(effectDC=1,effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.95,0.98,1)',label='CD')",
-                   "SurvZone(size=10,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',label='SZ')",
-                   "ProtZone(size=3,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',label='PZ')",
+                   "SurvZone(size=10,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',effectWB='rpert(n,0.95,0.98,1)',label='SZ')",
+                   "ProtZone(size=3,effectDC='rpert(n,0.95,0.98,1)',effectIMC='rpert(n,0.7,0.8,0.95)',effectILC='rpert(n,0.2,0.3,0.5)',effectWB='rpert(n,0.95,0.98,1)',label='PZ')",
                    "traceDC(prob=0.99,probdetect=0.95,delay='round(rpert(n,1,2,3))',tracetime='round(runif(n,0,2))',duration=30,label='traceDirect')",
                    "traceIDC(timetotrace='round(runif(n,0,4))',delayvisitMed='round(rpert(n,0,1,2))',delayvisitLow='round(rpert(n,0,2,4))',duration=30,label='traceInDirect')",
                    "SurvZonesHerds()"),
@@ -141,7 +150,7 @@ probList=list(   ## Default distributions
                                   
                  ############################################################
                  ## Files
-                 infofile="DataDADSASF.csv",    # File with herd locations and type 
+                 infofile="DataDADSASFWB.csv",    # File with herd locations and type 
                  typesfile="typesfile.csv",  # Definitions of type parameters
                  runfile="",                 # File used for additional output
                 fileMovMatAll="MovMatAll.csv", # bla bla

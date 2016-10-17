@@ -325,7 +325,6 @@ initializeASFvars <- function() {
   aHerd$relDC <<- rep(1,gMaxHerds)
   aHerd$relIMC <<- rep(1,gMaxHerds)
   aHerd$relILC <<- rep(1,gMaxHerds)
-  aHerd$relWB <<- rep(1,gMaxHerds)
     ## New additions TH ###
   aHerd$timeToVisitTraceIDC  <<- rep(0,gMaxHerds)
   aHerd$timeToVisitTraceDC  <<- rep(0,gMaxHerds)
