@@ -4,21 +4,17 @@
 #### national standstill and surveillance of herds (TH)
 #############################################################
 
-SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,effectWB,label){
+SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,label){
   if (!is.expression(effectDC))
     effectDC<-parse(text=effectDC)
   if (!is.expression(effectIMC))
     effectIMC<-parse(text=effectIMC)
   if (!is.expression(effectILC))
     effectILC<-parse(text=effectILC)
-  if (!is.expression(effectWB))
-    effectWB<-parse(text=effectWB)
-
 
   effDCSZ<-numeric(0)
   effIMCSZ<-numeric(0)
   effILCSZ<-numeric(0)
-  effWBSZ<-numeric(0)
   SZcenters<-NULL
   
   list(
@@ -26,7 +22,6 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,effectWB,label){
          effDCSZ<<-1-eval(effectDC,list(n=gMaxHerds))
          effIMCSZ<<-1-eval(effectIMC,list(n=gMaxHerds))
          effILCSZ<<-1-eval(effectILC,list(n=gMaxHerds))
-         effWBSZ<<-1-eval(effectWB,list(n=gMaxHerds))
          SZcenters<<-rep(FALSE,gMaxHerds)
        }
        ,
@@ -64,8 +59,7 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,effectWB,label){
            ## Second: Update aHerd$relDC, aHerd$relIMC and aHerd$relILC
             aHerd$relDC[inCircle] <<-pmin(aHerd$relDC[inCircle],effDCSZ[inCircle])
             aHerd$relIMC[inCircle]<<-pmin(aHerd$relIMC[inCircle],effIMCSZ[inCircle])
-            aHerd$relILC[inCircle]<<-pmin(aHerd$relILC[inCircle],effILCSZ[inCircle]) 
-            aHerd$relWB[inCircle]<<-pmin(aHerd$relWB[inCircle],effWBSZ[inCircle])    
+            aHerd$relILC[inCircle]<<-pmin(aHerd$relILC[inCircle],effILCSZ[inCircle])    
 
   ### here only herds within the surveillance zones are processed.
   ### herds will get a visit, if they become included in a zone while they were never visited,
@@ -125,20 +119,17 @@ SurvZone<-function(size=10,size2=3,effectDC,effectIMC,effectILC,effectWB,label){
 ##
 ########################################################
 
-ProtZone<-function(size=3,effectDC,effectIMC,effectILC,effectWB,label){
+ProtZone<-function(size=3,effectDC,effectIMC,effectILC,label){
   if (!is.expression(effectDC))
     effectDC<-parse(text=effectDC)
   if (!is.expression(effectIMC))
     effectIMC<-parse(text=effectIMC)
   if (!is.expression(effectILC))
     effectILC<-parse(text=effectILC)
-  if (!is.expression(effectWB))
-    effectWB<-parse(text=effectWB)
 
   effDCPZ<-numeric(0)
   effIMCPZ<-numeric(0)
   effILCPZ<-numeric(0)
-  effWBPZ<-numeric(0)
   PZcenters<-NULL
   
   list(
@@ -146,7 +137,6 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,effectWB,label){
          effDCPZ<<-1-eval(effectDC,list(n=gMaxHerds))
          effIMCPZ<<-1-eval(effectIMC,list(n=gMaxHerds))
          effILCPZ<<-1-eval(effectILC,list(n=gMaxHerds))
-         effWBPZ<<-1-eval(effectWB,list(n=gMaxHerds))
          PZcenters<<-rep(FALSE,gMaxHerds)
        }
        ,
@@ -178,8 +168,7 @@ ProtZone<-function(size=3,effectDC,effectIMC,effectILC,effectWB,label){
            ## Second: Update aHerd$relDC, aHerd$relIMC and aHerd$relILC
             aHerd$relDC[aHerd$inProtZone] <<-pmin(aHerd$relDC[aHerd$inProtZone],effDCPZ[aHerd$inProtZone])
             aHerd$relIMC[aHerd$inProtZone]<<-pmin(aHerd$relIMC[aHerd$inProtZone],effIMCPZ[aHerd$inProtZone])
-            aHerd$relILC[aHerd$inProtZone]<<-pmin(aHerd$relILC[aHerd$inProtZone],effILCPZ[aHerd$inProtZone])
-            aHerd$relWB[aHerd$inProtZone] <<-pmin(aHerd$relWB[aHerd$inProtZone],effWBPZ[aHerd$inProtZone])
+            aHerd$relILC[aHerd$inProtZone]<<-pmin(aHerd$relILC[aHerd$inProtZone],effILCPZ[aHerd$inProtZone])    
 
           ### here herds in the protection zones are processed.
             ## herds that had not been visited before or had been out of a protection zone and then came again in a protection zone are selected for 2 visits (PV1 and PV2)
