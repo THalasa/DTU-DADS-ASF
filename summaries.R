@@ -51,6 +51,8 @@ sumTh<-function(step){
                eval.parent(expression(NumSurvDeadAnim<- rep(0,n)))
                eval.parent(expression(NumSurvDeadHerd<- rep(0,n)))
                eval.parent(expression(DetFromSurvDead<- rep(0,n)))
+               eval.parent(expression(InfectedFromWB<- rep(0,n)))
+
 
              },
          day={
@@ -69,7 +71,7 @@ sumTh<-function(step){
            NumSurvDeadAnim[iteration] <<- sum(aHerd$DeadSampTest)
            NumSurvDeadHerd[iteration] <<- sum(aHerd$SampledDead)
            DetFromSurvDead[iteration] <<- sum(aHerd$DiagSurvDead)
-
+           InfectedFromWB[iteration]  <<- sum(aHerd$infMode%in%6:7)
         ### Herds that are in the zones and must be visited after the model run is finished (last detected herd is culled).
         ### Notice that we do not include the possibility of testing after with PCR for herds assigned to serology because of suspecion, 
         ### as we do in the survHerds function during the model run, because at this stage we know that there are no clinical herds. 
@@ -285,14 +287,14 @@ sumTh<-function(step){
                 ### Producing results ###
                 #########################
 ### Exporting the summary results ###
-      SumResOut <<- cbind(FirstEpiDet[iteration],gEpiDur[iteration],ObsEpiDur[iteration],NumInf[iteration],NumDet[iteration],NumCulled[iteration],diagHerdsSurv[iteration],
+      SumResOut <<- cbind(FirstEpiDet[iteration],gEpiDur[iteration],ObsEpiDur[iteration],NumInf[iteration],InfectedFromWB[iteration],NumDet[iteration],NumCulled[iteration],diagHerdsSurv[iteration],
                 DetFromSurvDead[iteration],Recovered[iteration],NumCullAnim[iteration],ClVisCount[iteration],SerVisHerdCount[iteration],SerVisAnimCount[iteration],
                 PCRVisHerdCount[iteration],PCRVisAnimCount[iteration],NumSurvDeadHerd[iteration],NumSurvDeadAnim[iteration],VisitCostsCl[iteration],
                 VisitCostsTes[iteration],SurvCosDead[iteration],logCostsSw[iteration],CCostsPigFS[iteration],ESCosts[iteration],cosWSFin[iteration],
                 cosWSWean[iteration],CompCosts[iteration],CosSS[iteration],LoExpSwProdEU[iteration],LoExpLivSwEU[iteration],LoExpSwNEU[iteration],MeetDelay[iteration]) 
       NAME <- paste(runID,"ASF.txt",sep="-") 
       write.table(SumResOut,NAME,append=T,sep=" ",col.names = F,row.names=F)                                                     
-      SumResOut  <<- matrix(numeric(0),ncol=31)
+      SumResOut  <<- matrix(numeric(0),ncol=32)
 
 ### Exporting the Infected herds matrix ### 
       IndexAIH <- which(aHerd$Diagnosed | aHerd$SusAgain>0 | aHerd$infMode>0 | aHerd$status==7)
