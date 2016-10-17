@@ -231,7 +231,7 @@ eval.parent(expression(toPlot2<- NULL))#just to test
  write.table(AllInfHerds,NAMEInf,sep=" ")
 
  eval.parent(expression(SumResOut  <- NULL))
- SumResOut  <<- matrix(numeric(0),ncol=31)
+ SumResOut  <<- matrix(numeric(0),ncol=32)
  NAME <- paste(runID,"ASF.txt",sep="-") 
  write.table(SumResOut,NAME,sep=" ")
 ######################################################################
@@ -325,6 +325,7 @@ initializeASFvars <- function() {
   aHerd$relDC <<- rep(1,gMaxHerds)
   aHerd$relIMC <<- rep(1,gMaxHerds)
   aHerd$relILC <<- rep(1,gMaxHerds)
+  aHerd$relWB <<- rep(1,gMaxHerds)
     ## New additions TH ###
   aHerd$timeToVisitTraceIDC  <<- rep(0,gMaxHerds)
   aHerd$timeToVisitTraceDC  <<- rep(0,gMaxHerds)
@@ -390,6 +391,8 @@ initializeASFvars <- function() {
       eval(herdtypes$RelSusceptibility[typeIndex],list(n=nType))
    aHerd$LocSpProfile[herdIndex] <<- 
       eval(herdtypes$LocSpProfile[typeIndex],list(n=nType))
+   aHerd$RiskWB[herdIndex] <<- 
+      eval(herdtypes$RiskWB[typeIndex],list(n=nType))
   }##EndOf for (i in ...)
 
 
