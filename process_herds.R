@@ -397,6 +397,105 @@ LASinf <- function(localsize,label,tStart=0,tEnd=Inf) {
        )
 }##EndOf LASinf()
 
+#######################################################
+## Infection from contact to wild boar in a          ##
+## situation where ASF is endemic in wild boar. (TH) ##
+#######################################################
+ WildBoar <- function(relCont,RiskVar,Reduction=1,ProbCont,PrevelanceWB=0.031,label,tStart=0,tEnd=Inf){
+
+  list(
+       init= function(){}
+       ,
+       day=function(){
+         if ( gTime>tStart & gTime<tEnd){
+
+     ## Here we determine the frequency of contact (lambda) to wild boar that is dependent on risk profile in relation to WB, which is
+     ## dependent on the distance to the nearest wild boar population or actually habitat.
+          FerqCont <- LambdaWB[aHerd[[RiskVar]]]
+
+     ## Here we determine the number of time WB may have potential contact to the herds.  
+           if(!outbreakDetected) RandCont <- rpois(length(FerqCont),FerqCont)
+     ## If outbreak is detected, then there is a possibility that contacts to WB by all herds can be reduced by a "Reduction" factor.
+           else                  RandCont <- rpois(length(FerqCont),FerqCont) * aHerd[[relCont]] * Reduction
+     ## Determine randomly whether their will be today at least one infectious contact to any of the herds
+            Prob <- RandCont * aHerd[[ProbCont]] * PrevelanceWB * as.numeric(aHerd$status==1) * aHerd$RelSusceptibility 
+            NumCont<-runif(length(RandCont))<=Prob # the probability that the contact is by an infected WB
+
+     ## Keep only the herds that are infected by WB
+            if(sum(NumCont)>0) {
+             NewInfs <- which(NumCont)
+             if(length(NewInfs)>0){
+## Update information about newly infected herds
+                aHerd$status[NewInfs]       <<- 2  # latent infection status
+                aHerd$infSource[NewInfs]    <<- -1 # record infection source herd (WB) 
+                aHerd$timeInfected[NewInfs] <<- gTime
+                aHerd$infMode[NewInfs]      <<- label   
+                aInfHerd$addInf(NewInfs,cbind(rep(1,length(NewInfs)),0,0),0)
+
+## Update the chronicale of new information
+               chronicle$addEntry(itn=iteration, state=2, newInfection=label,
+                                time=gTime,changedHerdsList=aHerd$ID[NewInfs],
+                                SourceHerds=0,
+                                HerdSize=aHerd$herdSize[NewInfs],HerdTypes=aHerd$herdType[NewInfs])
+
+           }#End of if(length( 
+          }#End of if(sum(
+        }##EndOf if (gTime>tStart ...)
+       }##EndOf day()
+       ,
+       cleaniteration=function(){
+         if (verbose) cat("Entered wildBoar$inititeration()\n")
+       }
+       )
+}##EndOf WildBoar ()
+
+#######################################################
+## Infection from contact to wild boar in a          ##
+## situation where ASF is endemic in wild boar. (TH) ##
+#######################################################
+ LSWildBoar <- function(RiskVar,PrevelanceWB=0.031,label,tStart=0,tEnd=Inf){
+
+  list(
+       init= function(){}
+       ,
+       day=function(){
+         if ( gTime>tStart & gTime<tEnd){
+
+
+     ## Here we determine the probability of infectious contact through local spread to wild boar.
+          ProbCont <- LocalSPWB[aHerd[[RiskVar]]]
+     ## Determine randomly whether their will be new infected herds
+            ProbCont <- ProbCont * as.numeric(aHerd$status==1) * aHerd$RelSusceptibility * PrevelanceWB
+            Infect <- runif(length(ProbCont))<=ProbCont# the probability that the contact is by an infected WB
+
+     ## Keep only the herds that are infected by WB
+            if(sum(Infect)>0){ 
+             NewInfs <- which(Infect)
+             if(length(NewInfs)>0){
+## Update information about newly infected herds
+                aHerd$status[NewInfs]       <<- 2  # latent infection status
+                aHerd$infSource[NewInfs]    <<- -1 # record infection source herd (WB) 
+                aHerd$timeInfected[NewInfs] <<- gTime
+                aHerd$infMode[NewInfs]      <<- label   
+                aInfHerd$addInf(NewInfs,cbind(rep(1,length(NewInfs)),0,0),0)
+
+## Update the chronicale of new information
+               chronicle$addEntry(itn=iteration, state=2, newInfection=label,
+                                time=gTime,changedHerdsList=aHerd$ID[NewInfs],
+                                SourceHerds=-1,
+                                HerdSize=aHerd$herdSize[NewInfs],HerdTypes=aHerd$herdType[NewInfs])
+
+           }#End of if(length( 
+          }#End of if(sum(
+        }##EndOf if (gTime>tStart ...)
+       }##EndOf day()
+       ,
+       cleaniteration=function(){
+         if (verbose) cat("Entered wildBoar$inititeration()\n")
+       }
+       )
+}##EndOf LSWildBoar()
+
 
 ######################
 ### constructAInfHerd
